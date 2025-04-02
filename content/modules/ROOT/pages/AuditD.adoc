@@ -1,6 +1,6 @@
-**Lab Title: Auditing with AuditD in Red Hat Enterprise Linux (RHEL) 9**
+# Auditing with AuditD in Red Hat Enterprise Linux (RHEL) 9
 
-Objective: By the end of this lab, you will understand the nomenclature associated with AuditD, comprehend its functionality and purpose in RHEL 9, and be able to test for AuditD controls.
+## Objective: By the end of this lab, you will understand the nomenclature associated with AuditD, comprehend its functionality and purpose in RHEL 9, and be able to test for AuditD controls.
 
 ---
 
