@@ -42,13 +42,11 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
    - Solution: Monitor available disk space using commands like `df -h` or set up automatic alerts using tools like `logwatch`. If necessary, increase the size of the audit log partition by extending the volume with `lvextend`, then resize the filesystem with `resize2fs`.
 
    Example:
-   ```bash
+   ```
    # Check available disk space
    df -h
-
    # Extend logical volume (replace 'audit_vg' and 'audit_log' with your volumes)
    lvextend -L +10G /dev/audit_vg/audit_log
-
    # Resize filesystem on extended partition
    resize2fs /dev/audit_vg/audit_log
    ```
@@ -57,13 +55,11 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
    - Solution: Review and adjust the audit configuration file (`/etc/audit/audit.rules`) to ensure that critical events are being audited. Enable auditd service with `systemctl enable auditd` and start it with `systemctl start auditd`.
 
    Example:
-   ```bash
+   ```
    # Edit audit rules configuration
    sudo nano /etc/audit/rules.d/audit.rules
-
    # Add or modify rules, e.g., to monitor file access
    -w /var/log/files -p wa -k file_access_monitor
-
    # Apply new rules without restarting auditd
    sudo augenrules --load
    ```
@@ -72,10 +68,9 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
    - Solution: Monitor disk I/O with tools like `iostat` or `vmstat`. Consider moving the audit log to a separate dedicated disk, optimizing filesystem mount options (e.g., noatime), or using SSDs for better performance.
 
    Example:
-   ```bash
+   ```
    # Monitor disk I/O
    iostat -dx 1
-
    # Mount options example, add to '/etc/fstab'
    /dev/sda1 /var/log ext4 defaults,noatime 0 2
    ```
@@ -84,17 +79,14 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
    - Solution: Adjust the audit queue size (`auditctl -s no` to disable it temporarily for testing) and monitor system resource usage with `vmstat`. Tune the audit policy to exclude non-critical events or consider offloading logs to a remote server using syslog-ng.
 
    Example:
-   ```bash
+   ```
    # Temporarily disable audit queue (for testing)
    sudo auditctl -s no
-
    # Monitor system resources
    vmstat 1
-
    # Install and configure syslog-ng for remote logging (example configuration)
    yum install syslog-ng
    sudo nano /etc/syslog-ng/syslog-ng.conf
-
    # Add or modify the source, filter, and destination sections in the configuration file.
    ```
 
@@ -102,12 +94,10 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
    - Solution: Install additional tools like `aureport`, `ausearch`, or `logrotate` for easier log analysis and management. Enable automatic log rotation with `logrotate`.
 
    Example:
-   ```bash
+   ```
    # Install required packages
    sudo yum install aureport ausearch logrotate
-
    # Configure logrotate
    sudo nano /etc/logrotate.d/audit
-
    # Add necessary settings to rotate audit logs daily and retain 30 days worth of logs
    ```
