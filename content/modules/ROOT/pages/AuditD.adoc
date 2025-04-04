@@ -41,7 +41,6 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
 1. **Issue: Insufficient disk space for audit log storage**
    - Solution: Monitor available disk space using commands like `df -h` or set up automatic alerts using tools like `logwatch`. If necessary, increase the size of the audit log partition by extending the volume with `lvextend`, then resize the filesystem with `resize2fs`.
 
-   Example:
    ```
    # Check available disk space
    df -h
@@ -54,7 +53,6 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
 2. **Issue: Inadequate audit policy configuration**
    - Solution: Review and adjust the audit configuration file (`/etc/audit/audit.rules`) to ensure that critical events are being audited. Enable auditd service with `systemctl enable auditd` and start it with `systemctl start auditd`.
 
-   Example:
    ```
    # Edit audit rules configuration
    sudo nano /etc/audit/rules.d/audit.rules
@@ -67,7 +65,6 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
 3. **Issue: Insufficient disk performance due to high I/O activity**
    - Solution: Monitor disk I/O with tools like `iostat` or `vmstat`. Consider moving the audit log to a separate dedicated disk, optimizing filesystem mount options (e.g., noatime), or using SSDs for better performance.
 
-   Example:
    ```
    # Monitor disk I/O
    iostat -dx 1
@@ -78,7 +75,6 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
 4. **Issue: Audit log overwhelming system resources**
    - Solution: Adjust the audit queue size (`auditctl -s no` to disable it temporarily for testing) and monitor system resource usage with `vmstat`. Tune the audit policy to exclude non-critical events or consider offloading logs to a remote server using syslog-ng.
 
-   Example:
    ```
    # Temporarily disable audit queue (for testing)
    sudo auditctl -s no
@@ -93,7 +89,6 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
 5. **Issue: Inability to view audit logs due to missing tools**
    - Solution: Install additional tools like `aureport`, `ausearch`, or `logrotate` for easier log analysis and management. Enable automatic log rotation with `logrotate`.
 
-   Example:
    ```
    # Install required packages
    sudo yum install aureport ausearch logrotate
