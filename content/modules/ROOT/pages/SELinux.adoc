@@ -1,1 +1,100 @@
+# SELinux 
+## Objective
 
+By the end of this guided lab exercise, you will be able to:
+
+1. Understand what SELinux is and its role in system security.
+2. Configure basic SELinux settings.
+3. Troubleshoot common SELinux issues.
+4. Manage SELinux booleans and contexts.
+
+## Introduction
+
+SELinux (Security-Enhanced Linux) is a security architecture for Linux systems, providing mechanisms for supporting access control security policies. This lab will
+guide you through initial setup and configuration of SELinux, as well as troubleshooting common issues.
+
+## Step 1: Verify SELinux Status
+
+First, let's check if SELinux is currently enabled on your system. Open a terminal and run the following command:
+
+```bash
+sestatus
+```
+
+If SELinux is enabled, you should see output similar to this:
+
+```
+SELinux status:                 enabled
+```
+
+## Step 2: Basic SELinux Configuration
+
+### 2.1 SELinux Modes
+
+SELinux can operate in three modes: Enforcing, Permissive, and Disabled.
+
+- **Enforcing:** Applies the security policy strictly, denying any actions not explicitly allowed by the defined policies. This is the secure mode and is
+recommended for production systems.
+
+- **Permissive:** Logs denied operations but does not block them. It's useful for debugging without disrupting system operation.
+
+- **Disabled:** SELinux policies are not enforced, but logs are still active.
+
+To change the SELinux mode, use the `setenforce` command:
+
+```bash
+sudo setenforce 1   # Enforcing
+sudo setenforce 0   # Permissive
+sudo setenforce 0   # Disabled (not recommended without good reason)
+```
+
+### 2.2 View Current SELinux Settings
+
+Check current SELinux settings with:
+
+```bash
+cat /etc/selinux/config
+```
+
+## Step 3: Managing SELinux Booleans
+
+SELinux booleans are on/off switches that enable or disable specific SELinux protections. To list all available booleans, run:
+
+```bash
+getsebool -a
+```
+
+To toggle a boolean (for example, `httpd_can_network_connect`), use the `setsebool` command:
+
+```bash
+sudo setsebool -P httpd_can_network_connect on  # Permanently enable
+sudo setsebool -P httpd_can_network_connect off # Permanently disable
+```
+
+## Step 4: Managing SELinux Contexts
+
+Contexts define the security attributes of files and processes. You can view the context of a file with `ls -Z`:
+
+```bash
+ls -Z /etc/selinux/config
+```
+
+To change a file's context, use the `chcon` command:
+
+```bash
+sudo chcon -t httpd_sys_content_t /var/www/html  # Change context for Apache web content directory
+```
+
+## Step 5: Troubleshooting SELinux Issues
+
+When encountering SELinux denials, use the `audit2why` command to translate AVC (Access Vector Cache) messages into human-readable form:
+
+```bash
+sudo audit2why -n /var/log/audit/audit.log  | more
+```
+
+Alternatively, check the SELinux log with:
+
+```bash
+cat /var/log/audit/audit.log | grep avc
+```
