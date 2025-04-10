@@ -81,7 +81,7 @@ The second option seems better for this scenario - let's update the file-backed 
 
 [source,bash]
 ----
-sudo fapolicyd-cli --file add /home/rhel/cowsay
+sudo fapolicyd-cli --file add /home/lab-user/cowsay
 ----
 
 If we take a look at the file `/etc/fapolicyd/fapolicyd.trust` we can see that changes that have been made:
@@ -91,7 +91,7 @@ If we take a look at the file `/etc/fapolicyd/fapolicyd.trust` we can see that c
 sudo cat /etc/fapolicyd/fapolicyd.trust
 ----
 
-* The full-path to the file is listed (`/home/rhel/cowsay`)
+* The full-path to the file is listed (`/home/lab-user/cowsay`)
 * The size of the file has been calculated and added
 * The SHA-256 hash for the file has been calculated and added
 Remember that we have `integrity = none` in our fapolicyd config file? These last two attributes - size and the SHA-256 has - are used for integrity checking. We'll take a closer look at this in the next step of the lab.
