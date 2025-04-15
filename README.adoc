@@ -1,109 +1,47 @@
+== Welcome to Enabling RHEL Security: SELinux, Fapolicyd and Auditd
+
+= Are You Ready to Elevate Your Red Hat Enterprise Linux Security Skills?
+
+In an era where cyber threats are increasingly sophisticated, securing Red Hat Enterprise Linux (RHEL) systems has never been more critical. In this lab, we'll explore three RHEL native tools that can transform your approach to security and safeguard your digital assets:
+
+. **SELinux** (Security-Enhanced Linux) implements Mandatory Access Control (MAC)
+. **Fapolicyd** serves as a user-space daemon that enhances file access control
+. **Auditd** is responsible for logging and monitoring system calls and user activities
+
+By utilizing these three tools together, you can create a comprehensive security strategy that protects your RHEL systems from emerging threats. SELinux provides a strong foundation for security, fapolicyd enhances file access control, and Auditd helps monitor system activity for potential threats. Together, they can help ensure the security of your digital assets and protect your infrastructure from cyber attacks.
+
+=== You will learn how to:
+
+Users will leave with practical knowledge on how to install, configure, and manage these security tools, enabling them to apply what they have learned in real-world scenarios.
+
+
+
 === Getting Started
 
-This template is designed to be used as a base for your showroom lab guides.
+* Follow the Documentation to do this on your own linux machine inside of a VM.
 
-The content is built using Antora, a static site generator for creating documentation sites from AsciiDoc documents.
+=== How to Follow along with the lab.
 
-This git repo template was created to make it easy for you to start developing your lab instructions.
+* https://github.com/rhpds/showroom-lb1624-rhel-security/blob/main/content/modules/ROOT/pages/index.adoc[Lab 0: Landing Intro Page]
+* https://github.com/rhpds/showroom-lb1624-rhel-security/blob/main/content/modules/ROOT/pages/SELinux.adoc[Lab 1: SELinux]
+* https://github.com/rhpds/showroom-lb1624-rhel-security/blob/main/content/modules/ROOT/pages/FAPolicyd.adoc[Lab 2: FAPolicyd]
+* https://github.com/rhpds/showroom-lb1624-rhel-security/blob/main/content/modules/ROOT/pages/AuditD.adoc[Lab 3: Auditd]
 
-Features:
 
-. 0% cruft
-. Red Hat Demo Platform UI Bundle default
-. Dev Mode extension that displays the asciidoc attributes you have to work with
-. Content is generated using Antora, a static site generator for creating documentation sites from AsciiDoc documents.
+=== Speaker Information:
 
-== Getting Started
+* Joshua Loscar 
+** Senior Technical Account Manager, Red Hat
 
-=== Using Containers (Recommended)
 
-In order to test and develop on your local machine, you can use a specially built container with Podman or Docker as follows.
+* Brian Hoppus 
+** Senior Technical Account Manager, Red Hat
 
-. Create a git repo from this template
-.. Suggested naming: `showroom_<lab-name>`
-. Clone your new repo and `cd` into it
-. When you make changes to the content, all you need is to kill the container and run it again.
-+
-[source,sh]
-----
-podman run --rm --name antora -v $PWD:/antora -p 8080:8080 -i -t ghcr.io/juliaaano/antora-viewer
-----
+* Nate Lager 
+** Sr. Technical Marketing Manager, Red Hat
 
-For SELinux environments, `:z` may need to be appended to the volume mount:
 
-----
-podman run --rm --name antora -v $PWD:/antora:z -p 8080:8080 -i -t ghcr.io/juliaaano/antora-viewer
-----
 
-Live-reload is not supported.
 
-=== Using Local Files (Less Recommended)
+=== Presentation Slides:
 
-. Create a git repo from this template
-. Clone the repo and `cd` into it
-. Run ./utilities/lab-serve
-. Open http://localhost:8080 in your browser
-. Run ./utilities/lab-build to build your html
-
-To rebuild your html, run `./utilites/build`.
-
-== Editing Files
-
-Now you are ready to go!
-You can start editing the files in the `content/modules/ROOT/pages/` directory.
-
-Many modern editors such as Visual Studio Code offer live Asciidoc Preview extensions.
-
-=== Understanding the Basic Template Directory Structure
-
-[source,sh]
-----
-./content/modules/ROOT/
-├── assets
-│   └── images                       # Images used in your content
-│       └── example-image.png
-├── examples                         # You can add downloadable assets here
-│   └── example-bash-script.sh       # e.g. an example bash script
-├── nav.adoc                         # Navigation for your lab
-├── pages                            # Your content goes here
-│   ├── index.adoc                   # First page of your lab, e.g. overview etc
-│   ├── module-01.adoc
-│   └── module-02.adoc               # Sample lab has 2 modules including index.adoc
-└── partials                         # You can add partials here, reusable content inserted inline into your modules
-    └── example_partial.adoc
-----
-
-== Adding Additional Links
-
-You can add links to external content in the convenient "Links" drop-down on the upper-right of the Showroom Summit 2024 UI.
-
-../content/antora.yml
-[source,yaml]
-----
-asciidoc:
-  attributes:
-    page-links:
-    - url: https://redhat.com
-      text: Red Hat
-----
-
-image::ui-links.png[]
-
-== Dev Mode
-
-As a convenience to developers, the Dev Mode Extention (disabled by default) displays the asciidoc attributes you have to work with while writing your lab instructions.
-
-. Disable/Enable Dev Mode by changing `enabled: true` or `enabled: false`
-+
-.default-site.yml
-[source,yaml]
-----
-extensions:
-  - id: dev-mode
-    require: ./content/lib/dev-mode.js
-    enabled: false
-----
-
-. Produces
-+
-image::dev-mode.png[]
