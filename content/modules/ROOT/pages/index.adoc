@@ -2,7 +2,9 @@
 
 ### Introduction
 
-Are you ready to elevate your Red Hat Enterprise Linux (RHEL) security skills and protect your systems from emerging threats? Join us to discover how three RHEL native tools can transform your approach to security and safeguard your digital assets!
+Are you ready to elevate your Red Hat Enterprise Linux (RHEL) security skills and protect your systems from emerging threats? 
+
+Join us to discover how three RHEL native tools can transform your approach to security and safeguard your digital assets!
 
 In an era where cyber threats are increasingly sophisticated, securing RHEL systems has never been more critical. Organizations rely on RHEL for its stability, performance, and security features, making it a cornerstone of many enterprise environments. However, the evolving landscape of cyber threats demands a proactive and multi-layered security strategy. This lab is designed to equip you with the knowledge and skills necessary to fortify your RHEL systems against a wide range of potential vulnerabilities.
 
