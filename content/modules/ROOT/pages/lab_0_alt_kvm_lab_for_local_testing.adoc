@@ -1,0 +1,453 @@
+== How to set up a Local Linux Machine with KVM to do this lab
+
+
+Lab Length
+Medium/Average (~15-25 mins)
+
+Goal
+Become familiar with how to set up a local machine to work on this workshop.
+
+== 1.1: Introduction
+
+**If you want to do this at home or on your own machine follow these instructions.**
+
+If you are in a live classroom or in a phisical workshop, you will skip this section.
+
+In this scenario you are a system administrator given a task to harden a Red Hat Enterprise Linux system. 
+You have no idea what is on the system, what it is running, the hardware, or software installed. 
+You are working on a black box.
+
+You are given access and credentials to a hypervisor machine. 
+The goal is to create 2 machines that we will use.
+First we will create a Virtual Machine as a Ansible Control Node also known as a Bastion.
+Second we will create a Virtual Machine as an Ansible Node to push changes too.
+You can add more nodes or other version of RHEL to have a testbed of RHEL 7-9.
+
+== 1.2 Expectations of your Host OS
+
+We are going to assume you are running
+
+* Fedora 38+ or
+* Red Hat Enterprise Linux 9+
+
+Hardware Requirements
+
+* CPU with 4 Thread
+* RAM 4GB
+* STORAGE 40 GB
+
+And that you have an account with sudo permissions.
+
+If you are running another OS, the instructions may be different.
+
+== 1.3 Log into Red Hat 
+
+=== 1.3.1 If you already have a Red Hat Account
+
+If you can log onto https://developers.redhat.com/about[developers.redhat.com] with your previously created account.
+ 
+You can skip part 1.3.2 and go to Step 1.4
+
+=== 1.3.2 Create a Red Hat account with Free Developer Subscription
+
+If you don't have a Red Hat Account, you can create a Red Hat account online to activate the No-cost Red Hat Enterprise Linux Individual Developer Subscription.
+
+https://developers.redhat.com/about[developers.redhat.com]
+
+You will need to follow the steps on the site, including to verify your email address.
+
+Then you will be able to log in access.redhat.com with your newly created account.
+
+== 1.4 RHEL KVM Downloads
+
+* In the top left corner, click the **Downloads**,
+* Then under Products find **Red Hat Enterprise Linux**,
+* Then click the blue **All Red Hat Enterprise Linux Downloads**, 
+* Scroll down untill you see the **Red Hat Enterprise Linux 9.4 KVM Guest Image**,
+* Then click the **Download Now**,
+
+While we wait for the download to finish.
+we can move onto the next step.
+
+== 1.5 Installing the Cockpit Project aka Web Console
+
+Cockpit is a web-based graphical interface for servers, intended for everyone, especially those who are:
+
+* new to linux
+** including Windows admins
+
+* familiar with linux
+** and want an easy, graphical way to administer servers
+
+* expert admins
+** who mainly use other tools but want an overview on individual systems
+
+=== 1.5.1 Install Cockpit Project with Virtual Machine Management
+
+**Important note for this lab**
+
+You should be able to click the clipboard icon in the code box to copy the command, and you will eather use the middle mouse button or right click and paste.
+The keyboard shortcuts for copy and paste (ctrl+c and ctrl+v) wont't work in this.
+
+We are going to install Cockpit, the virtual machine plugin and virtual machine guest packages onto our linux system.
+
+Open a terminal on your host machine, and type
+
+[source,ini,role=execute,subs=attributes+]
+----
+sudo yum install libvirt cockpit cockpit-machines -y
+
+sudo yum install guestfs-tools libguestfs-tools libguestfs -y
+----
+
+Then we will need to start those services
+[source,ini,role=execute,subs=attributes+]
+----
+sudo systemctl enable libvirtd --now
+
+sudo systemctl enable --now cockpit.socket
+----
+
+=== 1.5.2 KVM Image Prep of bastion and node1
+
+Once you have downloaded the kvm/qcow2 images,
+Move them to `/var/lib/libvirt/images`
+
+[source,ini,role=execute,subs=attributes+]
+----
+sudo mv ~/Downloads/rhel-9.4-x86_64-kvm.qcow2 /var/lib/libvirt/images/rhel-9.4-x86_64-kvm.qcow2
+----
+
+Then lets verify that the image is in the right location.
+
+[source,ini,role=execute,subs=attributes+]
+----
+sudo ls /var/lib/libvirt/images/
+----
+Next we will make a copy of the image and name it bastion.
+
+In your terminal
+
+[source,ini,role=execute,subs=attributes+]
+----
+sudo cp /var/lib/libvirt/images/rhel-9.4-x86_64-kvm.qcow2 /var/lib/libvirt/images/bastion-rhel-9.4-x86_64-kvm.qcow2
+----
+
+Next we will make a copy of the image and name it node1.
+
+In your terminal
+
+[source,ini,role=execute,subs=attributes+]
+----
+sudo cp /var/lib/libvirt/images/rhel-9.4-x86_64-kvm.qcow2 /var/lib/libvirt/images/node1-rhel-9.4-x86_64-kvm.qcow2
+----
+
+Then we will want to customize the kvm image with the following command.
+
+We will want to elivate to sudo
+[source,ini,role=execute,subs=attributes+]
+----
+sudo su
+----
+
+Type in your root password.
+
+Then set a root password into the image
+
+[source,ini,role=execute,subs=attributes+]
+----
+sudo virt-customize -a /var/lib/libvirt/images/bastion-rhel-9.4-x86_64-kvm.qcow2 --root-password password:MySecurePassphrasefor2024 --uninstall cloud-init
+
+sudo virt-customize -a /var/lib/libvirt/images/node1-rhel-9.4-x86_64-kvm.qcow2 --root-password password:MySecurePassphrasefor2024 --uninstall cloud-init
+----
+
+
+=== 1.5.3 Configure Cockpit with storage
+
+* Open a web browser like firefox or chrome
+* In the address bar go to **localhost:9090**
+** You can also use an IP address and add **:9090** to login
+* This gives you a login page with username and password
+** You will use the same login as your host machine
+* Upon Logging in, In the Top Right side you will See "Limited Access"
+** Click the big Blue button that says "Turn On administrative access"
+** Type in the Password
+** Now in the Top Right side you will see "Administrative access"
+* On the left hand side find and click **Virtual machines**,
+** When the page opens
+** In the top left corner, click **Storage pools**
+*** Then in the new window
+*** In the top right side, click **Create storage pools**
+**** In the new pop up window
+**** The First option toggle is **Connection** and should be set to **System**
+**** In the **Name** field type **default**,
+**** In the **Type** field keep the **Filesystem Directory**,
+**** In the **Target path** field type **/var/lib/libvirt/images/**
+**** And make sure the **Startup** is checked.
+**** Click the **Create** Button.
+
+=== 1.5.4 Configure Cockpit for Networked Bridge
+
+* On the left hand side find and click **Networking**,
+** On the right hand side, click the button "Add Bridge",
+** Click Add Button
+
+=== 1.5.5 Configure Cockpit for bastion Virtual Machine
+
+* On the left hand side find and click **Virtual machines**,
+** In the top Right side click the **Import VM**
+*** In the Name feild we want to use **bastion**
+*** On the Connections option we want to make sure that **System** is selected
+*** On the Disk image we want to use this path **/var/lib/libvirt/images/bastion-rhel-9.4-x86_64-kvm.qcow2**
+*** On Operation system choose Red Hat Enterprise Linux 9
+*** On Memory go with the default 2 GB of Ram
+*** Then Click the **Import and Run** 
+
+This should bring you back to the **Virtual machines** with a new entery for bastion.
+
+Click on that node and you should see and Overview, Usage and Console window.
+
+Click on the Console window, and log in with your root user and password.
+
+username: root
+password: MySecurePassphrasefor2024
+
+Then you will want to find out what the ip address is for bastion,
+In the console type
+
+[source,ini,role=execute,subs=attributes+]
+----
+ip addr
+----
+
+Take note of the IP address, then open a terminal on your **bastion** machine.
+
+
+You will also need to create a user to connect with over ssh since root is disabled by default in rhel 9.
+
+To keep usernames and permissions the same for the rest of the lab, we will set up a user called `ec2-user`
+
+[source,ini,role=execute,subs=attributes+]
+----
+useradd -m -g wheel ec2-user
+----
+
+and we will set a password 
+
+[source,ini,role=execute,subs=attributes+]
+----
+passwd ec2-user
+
+LetMeIn1
+----
+
+Next we need to set your hostname in the vm
+[source,ini,role=execute,subs=attributes+]
+----
+hostnamectl set-hostname bastion
+----
+
+Then reboot your virtual machine.
+
+[source,ini,role=execute,subs=attributes+]
+----
+reboot
+----
+=== 1.5.6 Configure Cockpit for node1 Virtual Machine
+
+* On the left hand side find and click **Virtual machines**,
+** In the top Right side click the **Import VM**
+*** In the Name feild we want to use **node1**
+*** On the Connections option we want to make sure that **System** is selected
+*** On the Disk image we want to use this path **/var/lib/libvirt/images/node1-rhel-9.4-x86_64-kvm.qcow2**
+*** On Operation system choose Red Hat Enterprise Linux 9
+*** On Memory go with the default 2 GB of Ram
+*** Then Click the **Import and Run** 
+
+This should bring you back to the **Virtual machines** with a new entery for node1.
+
+Click on that node and you should see and Overview, Usage and Console window.
+
+Click on the Console window, and log in with your root user and password.
+
+username: root
+password: MySecurePassphrasefor2024
+
+Then you will want to find out what the ip address is for node1,
+In the console type
+
+[source,ini,role=execute,subs=attributes+]
+----
+ip addr
+----
+
+Take note of the IP address, then open a terminal on your **bastion** machine.
+
+
+You will also need to create a user to connect with over ssh since root is disabled by default in rhel 9.
+
+To keep usernames and permissions the same for the rest of the lab, we will set up a user called `ec2-user`
+
+[source,ini,role=execute,subs=attributes+]
+----
+useradd -m -g wheel ec2-user
+----
+
+and we will set a password 
+
+[source,ini,role=execute,subs=attributes+]
+----
+passwd ec2-user
+
+LetMeIn1
+----
+
+Next we need to set your hostname in the vm
+[source,ini,role=execute,subs=attributes+]
+----
+hostnamectl set-hostname node1
+----
+
+Then reboot your virtual machine.
+
+[source,ini,role=execute,subs=attributes+]
+----
+reboot
+----
+
+=== 1.6 Create a SSH key pair
+
+From your bastion host, open a terminal
+
+You should see a prompt with your current username and the hostname of the machine you are logged into.
+
+[source,textinfo]
+----
+[ec2-user@bastion ~]$
+----
+
+
+We want to find out if the current machine has any ssh keys under the users ‘.ssh’ directory. 
+
+[source,ini,role=execute,subs=attributes+]
+----
+ls ~/.ssh/
+----
+
+`ls` is going to list the files under the directory /home/username/.ssh
+
+Next we want to create our own ssh-keypair, to do this using the following command.
+
+[source,bash,role=execute,attributes+]
+----
+ssh-keygen
+----
+
+This creates an interactive shell asking you a few questions.
+The first question is where do you want the key pair saved?
+We want to go with the default location, so hit the enter button on your keyboard.
+
+Next question is `Enter Passphrase` for your ssh key pair,
+If your environment requires a password on your ssh keypairs, I’ll have a supplemental ssh_advance  section at the end of the lab for you to go through.
+We are going to go default without a password.
+On your keyboard, hit enter twice.
+
+Then on the screen will be a message that says something like.
+
+[source,textinfo]
+----
+
+<<< OUTPUT ABRIDGED >>>
+
+Your identification has been saved in /home/ec2-user/.ssh/id_rsa
+Your public key has been saved in /home/ec2-user/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:5Z8GpqUSojEcZWvtspDVefI5YIVajUr3+HTVi3HcE+4 ec2-user@bastion.fnlng.internal
+The key's randomart image is:
++---[RSA 3072]----+
+|    o  +.    o o.|
+|   o.+=o.   o =..|
+|  ..+=Bo. .. + o.|
+| . =oo.=o+. . o  |
+|  * o ooS.=    E |
+|   = + ..* o .   |
+|  . . . o   +    |
+|       .   .     |
+|                 |
++----[SHA256]-----+
+
+<<< OUTPUT ABRIDGED >>>
+----
+
+
+=== 1.7 Verifying Key Pair Creation
+
+Now lets make sure we can see the newly created ssh keypair.
+
+We want to find out if the current machine has any ssh keys under the users `.ssh` directory. 
+
+
+[source,ini,role=execute,subs=attributes+]
+----
+ls ~/.ssh/
+----
+
+You should now see 2 new files called `id_rsa` and `id_rsa.pub`
+
+
+[source,textinfo]
+----
+[ec2-user@bastion ~]$ ls ~/.ssh/
+authorized_keys  config   id_rsa  id_rsa.pub
+----
+
+=== 1.8 Push your public ssh Key to node1
+
+Now we want to send our public key to the  ec2-user on the node1 machine.
+
+
+[source,ini,role=execute,subs=attributes+]
+----
+ssh-copy-id ec2-user@node1IPADDRESS
+----
+
+It should promopt you to enter the root password to the node1 machine.
+
+
+=== 1.9 Verifying ssh keys work
+
+
+You will want to test that bastion ssh key works to connect to your node1 machine.
+
+[source,ini,role=execute,subs=attributes+]
+----
+ssh ec2-user@node1IPADDRESS
+----
+
+When you log in you should  now see
+
+You should see a prompt with your current username and the hostname of the machine you are logged into.
+
+
+[source,textinfo]
+----
+[ec2-use@node1 ~]$
+----
+
+You can now exit the node machine by typing,
+
+[source,ini,role=execute,subs=attributes+]
+----
+exit
+----
+
+Which should take you back to your bastion host.
+
+Now we are ready to step into the next section.
+
+=== 1.9.1 copy your ssh key to your local machine
+
+[source,ini,role=execute,subs=attributes+]
+----
+ssh ec2-user@localhost
+----
