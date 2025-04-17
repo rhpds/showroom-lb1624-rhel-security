@@ -131,37 +131,36 @@ The `/etc/audit/auditd.conf` file
 can be modified using any text editor. In this section, you use the `sed` command to edit the file.
 
 . If you are not already there, log in to the workstation bastion host as *lab-user* from your desktop system (replacing `GUID` with your lab-provided GUID and, if needed, using *r3dh4t1!* as the password):
-+
-----
-[localhost ~]$ ssh lab-user@workstation-GUID.rhpds.opentlc.com
-----
 
-. Log in to the *audit.example.com* host as *root*:
-+
+```bash
+ssh lab-user@workstation-GUID.rhpds.opentlc.com
+```
+
+. Log in to the *bastion* host as *root*:
+
 [source]
-----
-[lab-user@workstation-GUID ~]$ ssh root@audit.example.com
-----
+```bash
+ssh root@audit.example.com
+```
 
 . As *root*, edit the `auditd.conf` file:
-+
-----
-[root@audit ~]# sed -e 's/^flush.*/flush = INCREMENTAL_ASYNC/' -i /etc/audit/auditd.conf
-[root@audit ~]# sed -e 's/^freq.*/freq = 50/' -i /etc/audit/auditd.conf
-[root@audit ~]# sed -e 's/^log_format.*/log_format = ENRICHED/' -i /etc/audit/auditd.conf
-----
-+
+```bash
+sed -e 's/^flush.*/flush = INCREMENTAL_ASYNC/' -i /etc/audit/auditd.conf
+sed -e 's/^freq.*/freq = 50/' -i /etc/audit/auditd.conf
+sed -e 's/^log_format.*/log_format = ENRICHED/' -i /etc/audit/auditd.conf
+```
+
 After the configuration file is updated, you must signal the audit
 daemon to reload its configuration.
 
 . As *root*, force `auditd` to reload its configuration:
 +
-----
-[root@audit ~]# service auditd reload
-----
-+
+```bash
+service auditd reload
+```
+
 Expect to see it return an acknowledgement similar to:
-+
+
 ----
 Reconfiguring: [  OK  ]
 ----
