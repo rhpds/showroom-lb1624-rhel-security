@@ -6,7 +6,7 @@ By the end of this guided lab exercise, you will be able to:
 1. Understand what SELinux is and its role in system security.
 2. Configure basic SELinux settings.
 3. Troubleshoot common SELinux issues.
-4. Manage SELinux booleans and contexts.
+4. Manage SELinux contexts.
 
 ## Introduction
 
@@ -17,19 +17,31 @@ guide you through initial setup and configuration of SELinux, as well as trouble
 
 First, let's check if SELinux is currently enabled on your system. Open a terminal and run the following command:
 
-```bash
+[source,bash,role="execute",subs=attributes+]
+----
 sestatus
-```
+----
 
-If SELinux is enabled, you should see output similar to this:
+SELinux is enabled by default, so you should see output similar to this:
 
-```
+....
+[lab-user@rhel ~]$ sestatus
 SELinux status:                 enabled
-```
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Memory protection checking:     actual (secure)
+Max kernel policy version:      33
+[lab-user@rhel ~]$
+....
 
-## Step 2: Basic SELinux Configuration
+The key things here to note are the status (enabled), and the mode (enforcing). Let's look at the configuration next.
 
-### 2.1 SELinux Modes
+## Step 2: Review SELinux Configuration
 
 SELinux can operate in three modes: Enforcing, Permissive, and Disabled.
 
@@ -42,59 +54,167 @@ recommended for production systems.
 
 To change the SELinux mode, use the `setenforce` command:
 
-```bash
-sudo setenforce 1   # Enforcing
-sudo setenforce 0   # Permissive
-sudo setenforce 0   # Disabled (not recommended without good reason)
-```
-
-### 2.2 View Current SELinux Settings
-
-Check current SELinux settings with:
-
-```bash
+[source,bash,role="execute",subs=attributes+]
+----
 cat /etc/selinux/config
-```
+----
 
-## Step 3: Managing SELinux Booleans
+The important lines here are `SELINUX=enforcing` and `SELINUXTYPE=targeted`. Notice how they line up with the output of `sestatus`?
 
-SELinux booleans are on/off switches that enable or disable specific SELinux protections. To list all available booleans, run:
+## Step 3: Install, start, and enable the Apache Web Server
 
-```bash
-getsebool -a
-```
+We need something to break with SELinux, so we will setup a basic web server. Run the following commands to install the package, and start and enable the service:
+[source,bash,role="execute",subs=attributes+]
+----
+sudo dnf install httpd -y
+sudo systemctl enable --now httpd
+----
 
-To toggle a boolean (for example, `httpd_can_network_connect`), use the `setsebool` command:
+Test to make sure you can view the default Apache HTML content:
+[source,bash,role="execute",subs=attributes+]
+----
+curl localhost
+----
 
-```bash
-sudo setsebool -P httpd_can_network_connect on  # Permanently enable
-sudo setsebool -P httpd_can_network_connect off # Permanently disable
-```
+## Step 4: Creating Web Content
+Create a new file in your home directory called `index.html`. We don't need it to be valid HTML content, we just need something to play with:
+[source,bash,role="execute",subs=attributes+]
+----
+echo "Test HTML file" > ~/index.html
+----
 
-## Step 4: Managing SELinux Contexts
+Move that file to the directory used to serve HTML content by default:
+[source,bash,role="execute",subs=attributes+]
+----
+sudo mv ~/index.html /var/www/html/
+----
 
-Contexts define the security attributes of files and processes. You can view the context of a file with `ls -Z`:
+Test your webserver again:
+----
+curl localhost
+----
 
-```bash
-ls -Z /etc/selinux/config
-```
+Oops! Looks like something went wrong:
+.....
+[lab-user@rhel ~]$ curl localhost
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>403 Forbidden</title>
+</head><body>
+<h1>Forbidden</h1>
+<p>You don't have permission to access this resource.</p>
+</body></html>
+[lab-user@rhel ~]$
+.....
 
-To change a file's context, use the `chcon` command:
-
-```bash
-sudo chcon -t httpd_sys_content_t /var/www/html  # Change context for Apache web content directory
-```
+Let's figure out what's happening.
 
 ## Step 5: Troubleshooting SELinux Issues
+First, let's look at the long-listing of our web content, including the SELinux label:
+[source,bash,role="execute",subs=attributes+]
+----
+ls -lZ /var/www/html/index.html
+----
 
-When encountering SELinux denials, use the `audit2why` command to translate AVC (Access Vector Cache) messages into human-readable form:
+We see the SELinux label has a type that seems appropriate for a home directory:
+.....
+[lab-user@rhel ~]$ ls -lZ /var/www/html/index.html
+-rw-r--r--. 1 bhoppus bhoppus unconfined_u:object_r:user_home_t:s0 0 Apr 18 13:59 /var/www/html/index.html
+[lab-user@rhel ~]$ 
+.....
 
-```bash
-sudo audit2why -n /var/log/audit/audit.log  | more
-```
+Let's dig further. View the most recent Access Vector Cache (AVC) deninal from the audit log:
+ 
+[source,bash,role="execute",subs=attributes+]
+----
+sudo ausearch -m AVC -ts recent
+----
 
-Alternatively, check the SELinux log with:
+You should see output similar to this:
+.....
+[lab-user@rhel ~]$ sudo ausearch -m AVC -ts recent
+----
+time->Fri Apr 18 12:44:53 2025
+type=PROCTITLE msg=audit(1745005493.034:185): proctitle=2F7573722F7362696E2F6874747064002D44464F524547524F554E44
+type=SYSCALL msg=audit(1745005493.034:185): arch=c00000b7 syscall=56 success=no exit=-13 a0=ffffffffffffff9c a1=ffff8400c4f8 a2=80000 a3=0 items=0 ppid=1745 pid=1747 auid=4294967295 uid=48 gid=48 euid=48 suid=48 fsuid=48 egid=48 sgid=48 fsgid=48 tty=(none) ses=4294967295 comm="httpd" exe="/usr/sbin/httpd" subj=system_u:system_r:httpd_t:s0 key=(null)
+type=AVC msg=audit(1745005493.034:185): avc:  denied  { read } for  pid=1747 comm="httpd" name="index.html" dev="dm-0" ino=101288820 scontext=system_u:system_r:httpd_t:s0 tcontext=unconfined_u:object_r:user_home_t:s0 tclass=file permissive=0
+[lab-user@rhel ~]$ 
+.....
 
-```bash
-cat /var/log/audit/audit.log | grep avc
-```
+This seems like the right event, but the readability can be improved. Let's try using the `sealert` command. We'll need to install the package before we run it:
+----
+sudo dnf isntall setroubleshoot-server -y
+sudo sealert --analyze /var/log/audit/audit.log
+----
+
+There's a lot here, so let's break down the relevant parts:
+.....
+SELinux is preventing /usr/sbin/httpd from read access on the file index.html.
+.....
+
+This confirms that this is the error event we need to review. We then see a helpful suggestion:
+.....
+If you want to allow httpd to read user content
+Then you must tell SELinux about this by enabling the 'httpd_read_user_content' boolean.
+
+Do
+setsebool -P httpd_read_user_content 1
+
+*****  Plugin catchall (11.6 confidence) suggests   **************************
+
+If you believe that httpd should be allowed read access on the index.html file by default.
+Then you should report this as a bug.
+You can generate a local policy module to allow this access.
+Do
+allow this access for now by executing:
+# ausearch -c 'httpd' --raw | audit2allow -M my-httpd
+# semodule -X 300 -i my-httpd.pp
+.....
+
+As helpful as this is, it's not what we're after. We don't want to change SELinux booleans or policies. We want to change the label to what the system expects by default. Find this line under "Additional Information":
+.....
+Target Context                unconfined_u:object_r:user_home_t:s0
+.....
+
+That's good enough to see that the SELinux file context is likely the issue. But what do we actually need it to be?
+
+Let's review the local policy for this directory path. The `semanage` command is useful for viewing and modifying policy, There's a lot of policy configured, so we will need to use a regular expression to search for our specific path:
+[source,bash,role="execute",subs=attributes+]
+----
+sudo semanage fcontext --list | grep '/var/www(/.*)?'
+----
+
+Ah ha! The first line we see shows that we need the `httpd_sys_content_t` file context:
+.....
+[lab-user@rhel ~]$ sudo semanage fcontext --list | grep '/var/www(/.*)?'
+/var/www(/.*)?                                     all files          system_u:object_r:httpd_sys_content_t:s0
+/var/www(/.*)?/logs(/.*)?                          all files          system_u:object_r:httpd_log_t:s0
+.....
+
+
+## Step 6: Fixing SELinux File Contexts
+There are a couple of ways of addressing the issue here. We could:
+
+1. Delete the file and start over
+2. Fix the labeling of the file that exists
+
+Option 1 has the benefit of starting clean, but may not always be an option in real-world situations. We won't be following that in this guide. For your own personal reference, **copying** a file to a new location will automatically apply the correct SELinux file context, while **moving** a file will keep the original SELinux file context, risking being mislabled in its new path. That is exactly the "mistake" we made in step 4 of this lab. Let's look at option 2 now. 
+
+The `restorecon` command is used to restore the default SELinux context based on the system policy. We learned in Step 5 that the system policy shows `httpd_sys_content_t` is the correct label. Let's use `restorecon` to recursively fix labeling issues with verbose output:
+[source,bash,role="execute",subs=attributes+]
+----
+sudo restorecon -Rv /var/www/html
+----
+
+Nice! We see output that shows a label change took effect:
+.....
+[lab-user@rhel ~]$ sudo restorecon -Rv /var/www/html
+Relabeled /var/www/html/index.html from unconfined_u:object_r:user_home_t:s0 to unconfined_u:object_r:httpd_sys_content_t:s0
+[lab-user@rhel ~]$
+.....
+
+Now we can access the web page of server without issues:
+.....
+[lab-user@rhel ~]$ curl localhost
+Test HTML file
+.....
