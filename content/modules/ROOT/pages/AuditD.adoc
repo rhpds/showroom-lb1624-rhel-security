@@ -41,41 +41,48 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
 1. **Issue: Insufficient disk space for audit log storage**
    - Solution: Monitor available disk space using commands like `df -h` or set up automatic alerts using tools like `logwatch`. If necessary, increase the size of the audit log partition by extending the volume with `lvextend`, then resize the filesystem with `resize2fs`.
 
-   ```
+[source,bash,role="execute",subs=attributes+]
+----
    # Check available disk space
    df -h
    # Extend logical volume (replace 'audit_vg' and 'audit_log' with your volumes)
    lvextend -L +10G /dev/audit_vg/audit_log
    # Resize filesystem on extended partition
    resize2fs /dev/audit_vg/audit_log
-   ```
+   [source,bash,role="execute",subs=attributes+]
+----
 
 2. **Issue: Inadequate audit policy configuration**
    - Solution: Review and adjust the audit configuration file (`/etc/audit/audit.rules`) to ensure that critical events are being audited. Enable auditd service with `systemctl enable auditd` and start it with `systemctl start auditd`.
 
-   ```
+[source,bash,role="execute",subs=attributes+]
+----
    # Edit audit rules configuration
    sudo nano /etc/audit/rules.d/audit.rules
    # Add or modify rules, e.g., to monitor file access
    -w /var/log/files -p wa -k file_access_monitor
    # Apply new rules without restarting auditd
    sudo augenrules --load
-   ```
+   [source,bash,role="execute",subs=attributes+]
+----
 
 3. **Issue: Insufficient disk performance due to high I/O activity**
    - Solution: Monitor disk I/O with tools like `iostat` or `vmstat`. Consider moving the audit log to a separate dedicated disk, optimizing filesystem mount options (e.g., noatime), or using SSDs for better performance.
 
-   ```
+[source,bash,role="execute",subs=attributes+]
+----
    # Monitor disk I/O
    iostat -dx 1
    # Mount options example, add to '/etc/fstab'
    /dev/sda1 /var/log ext4 defaults,noatime 0 2
-   ```
+   [source,bash,role="execute",subs=attributes+]
+----
 
 4. **Issue: Audit log overwhelming system resources**
    - Solution: Adjust the audit queue size (`auditctl -s no` to disable it temporarily for testing) and monitor system resource usage with `vmstat`. Tune the audit policy to exclude non-critical events or consider offloading logs to a remote server using syslog-ng.
 
-   ```
+[source,bash,role="execute",subs=attributes+]
+----
    # Temporarily disable audit queue (for testing)
    sudo auditctl -s no
    # Monitor system resources
@@ -84,18 +91,22 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
    yum install syslog-ng
    sudo nano /etc/syslog-ng/syslog-ng.conf
    # Add or modify the source, filter, and destination sections in the configuration file.
-   ```
+   [source,bash,role="execute",subs=attributes+]
+----
 
 5. **Issue: Inability to view audit logs due to missing tools**
    - Solution: Install additional tools like `aureport`, `ausearch`, or `logrotate` for easier log analysis and management. Enable automatic log rotation with `logrotate`.
 
-   ```
+[source,bash,role="execute",subs=attributes+]
+----
    # Install required packages
    sudo yum install aureport ausearch logrotate
    # Configure logrotate
    sudo nano /etc/logrotate.d/audit
    # Add necessary settings to rotate audit logs daily and retain 30 days worth of logs
-   ```
+   [source,bash,role="execute",subs=attributes+]
+----
+
 ---
 
 = Lab 3: Auditing on Red Hat Enterprise Linux 9
@@ -132,32 +143,34 @@ can be modified using any text editor. In this section, you use the `sed` comman
 
 . If you are not already there, log in to the workstation bastion host as *lab-user* from your desktop system (replacing `GUID` with your lab-provided GUID and, if needed, using *r3dh4t1!* as the password):
 
-```bash
+[source,bash,role="execute",subs=attributes+]
+----
 ssh lab-user@workstation-GUID.rhpds.opentlc.com
-```
+----
 
 . Log in to the *bastion* host as *root*:
 
-[source]
-```bash
+[source,bash,role="execute",subs=attributes+]
+----
 ssh root@audit.example.com
-```
+----
 
 . As *root*, edit the `auditd.conf` file:
-```bash
+[source,bash,role="execute",subs=attributes+]
+----
 sed -e 's/^flush.*/flush = INCREMENTAL_ASYNC/' -i /etc/audit/auditd.conf
 sed -e 's/^freq.*/freq = 50/' -i /etc/audit/auditd.conf
 sed -e 's/^log_format.*/log_format = ENRICHED/' -i /etc/audit/auditd.conf
-```
+----
 
 After the configuration file is updated, you must signal the audit
 daemon to reload its configuration.
 
 . As *root*, force `auditd` to reload its configuration:
-+
-```bash
+[source,bash,role="execute",subs=attributes+]
+----
 service auditd reload
-```
+----
 
 Expect to see it return an acknowledgement similar to:
 
@@ -169,13 +182,13 @@ The audit daemon can dump a small report about its configuration and some facts 
 its current state. This can help you diagnose problems encountered by the audit daemon.
 
 . As *root*, determine the audit daemon's state:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
-[root@audit ~]# service auditd state
+service auditd state
 ----
 +
 Expect to see it return an acknowledgement similar to the following, with a list of values including the current time, process priority, configuration options, and disk free space:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 Getting auditd internal state: [  OK  ]
 ----
@@ -183,9 +196,9 @@ Getting auditd internal state: [  OK  ]
 Usually the audit daemon enables the kernel's audit subsystem.
 
 . As *root*, get the kernel's state to verify that the audit system is enabled:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
-	[root@audit ~]# auditctl -s
+auditctl -s
 ----
 +
 The `1` in the first line of the output of the `auditctl` command indicates that it is enabled. The `pid` line provides the PID of the audit daemon. The rest of the output is the kernel status, not including rules.
@@ -212,15 +225,15 @@ Technical Implementation Guide (STIG) for Red Hat Enterprise Linux.
 
 . While logged in to the *audit.example.com* system as *root*, enable a number of
 pre-defined audit filters:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
-[root@audit ~]# cat /usr/share/doc/audit/rules/README-rules
-[root@audit ~]# rm /etc/audit/rules.d/*
-[root@audit ~]# cp /usr/share/doc/audit/rules/10-base-config.rules /etc/audit/rules.d
-[root@audit ~]# cp /usr/share/doc/audit/rules/30-stig.rules /etc/audit/rules.d
-[root@audit ~]# cp /usr/share/doc/audit/rules/31-privileged.rules /etc/audit/rules.d
-[root@audit ~]# cp /usr/share/doc/audit/rules/99-finalize.rules /etc/audit/rules.d
-[root@audit ~]# augenrules --load
+cat /usr/share/doc/audit/rules/README-rules
+rm /etc/audit/rules.d/*
+cp /usr/share/doc/audit/rules/10-base-config.rules /etc/audit/rules.d
+cp /usr/share/doc/audit/rules/30-stig.rules /etc/audit/rules.d
+cp /usr/share/doc/audit/rules/31-privileged.rules /etc/audit/rules.d
+cp /usr/share/doc/audit/rules/99-finalize.rules /etc/audit/rules.d
+augenrules --load
 ----
 +
 The `augenrules` tool combines all of the `*.rules` files located in
@@ -230,9 +243,9 @@ and rerun the `augenrules --load` command to reconfigure your system.
 
 . Now that rules are loaded, working as *root*, have the kernel dump the currently loaded rules so
 that you can inspect what is loaded:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
-[root@audit ~]# auditctl -l
+auditctl -l
 ----
 +
 Expect to see many audit rules output from the kernel.
@@ -279,24 +292,25 @@ more detail.)
 
 . While logged into the *audit.example.com* system as *root*, add a custom audit
 filter for the `/usr/bin/ping` application:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
-[root@audit ~]# auditctl -a always,exit -F exe=/usr/bin/ping -k rhkey
+auditctl -a always,exit -F exe=/usr/bin/ping -k rhkey
 ----
 
 . As *root*, add a new rule file to `/etc/audit/rules.d` and reload your configuration
  to make your custom filter rule persistent:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
-[root@audit ~]# echo "-a always,exit -S all -F exe=/usr/bin/ping -F key=rhkey" > /etc/audit/rules.d/70-rhkey_lab.rules
-[root@audit ~]# augenrules --load
+echo "-a always,exit -S all -F exe=/usr/bin/ping -F key=rhkey" > /etc/audit/rules.d/70-rhkey_lab.rules
+
+augenrules --load
 ----
 +
 In addition to modifying custom filter rules, you can adjust the base configuration of the audit subsystem in the Linux kernel using `auditctl`.
 
 . As *root*, increase the audit backlog buffer to `8192` entries:
 
-	[root@audit ~]# auditctl -b 8192
+auditctl -b 8192
 +
 This setting is confirmed by output similar to the status command.
 +
@@ -305,10 +319,11 @@ create a new file in `/etc/audit/rules.d` with the configuration and reload the
 audit rules.
 
 . As *root*, make the backlog changes persistent:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
-[root@audit ~]# echo "-b 8192" > /etc/audit/rules.d/15-rhkey_kernel.rules
-[root@audit ~]# augenrules --load
+echo "-b 8192" > /etc/audit/rules.d/15-rhkey_kernel.rules
+
+augenrules --load
 ----
 
 ==== 3.1.2.3: Defining Kernel Boot Parameters
@@ -325,22 +340,23 @@ In this section, you modify `/etc/default/grub` to add audit-related configurati
 kernel's boot prompt. Then you regenerate the boot menu so that it takes effect.
 
 . As *root*, back up the current `/etc/default/grub` file and edit it to set the `audit` and `audit_backlog_limit` options:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
-[root@audit ~]# cp /etc/default/grub /etc/default/grub.bak
-[root@audit ~]# sed -e '/GRUB_CMDLINE_LINUX/s/\"/ audit=1 audit_backlog_limit=8192\"/2' -i /etc/default/grub
+cp /etc/default/grub /etc/default/grub.bak
+
+sed -e '/GRUB_CMDLINE_LINUX/s/\"/ audit=1 audit_backlog_limit=8192\"/2' -i /etc/default/grub
 ----
 
 . Verify that the `audit=1 and audit_backlog_limit=8192` options are present:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
-[root@audit ~]# grep GRUB_CMDLINE_LINUX /etc/default/grub
+grep GRUB_CMDLINE_LINUX /etc/default/grub
 ----
 
 . As *root*, regenerate the grub boot menu:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
-[root@audit ~]# grub2-mkconfig -o `find /boot -name grub.cfg`
+grub2-mkconfig -o `find /boot -name grub.cfg`
 ----
 * The menu is in different places based on whether you have a BIOS- or UEFI-based machine. The `find` command locates the file for you.
 
@@ -354,22 +370,22 @@ the system is configured as described earlier in this lab.
 
 . Open another terminal shell on the workstation bastion host, and from there log in to the
 *audit.example.com* system as the *auditlab* user:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
-[lab-user@workstation-GUID ~]$ ssh auditlab@audit.example.com
+ssh auditlab@audit.example.com
 ----
 
 . Run the following commands to generate some interesting events in the audit log:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [auditlab@audit ~]$ vi /etc/shadow
 (Type :q! to exit vi)
 ----
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [auditlab@audit ~]$ ping -c 1 127.0.0.1
 ----
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [auditlab@audit ~]$ vi ~/project_tps_report.txt
 (Type: i to go into insert mode)
@@ -377,7 +393,7 @@ the system is configured as described earlier in this lab.
 (Press *Esc*)
 (Type :wq! to save the file and exit vi)
 ----
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [auditlab@audit ~]$ chmod 0664 ~/project_tps_report.txt
 ----
@@ -396,7 +412,7 @@ The `--start` option specifies at what point in the audit logs to start searchin
 record type.
 
 . While logged into the *audit.example.com* system as *root*, examine the login events on the test system:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [root@audit ~]# ausearch --start today -m USER_LOGIN
 ----
@@ -404,7 +420,7 @@ record type.
 Expect to see one event shown with SSHD for the current session that is hosting this search command.
 
 . As *root*, list all of the service start and stop events:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [root@audit ~]# ausearch --start this-month -m SERVICE_START -m SERVICE_STOP
 ----
@@ -419,7 +435,7 @@ fields into a more human-readable form. The `-k` option searches on the key
 assigned to an audit rule.
 
 . As *root*, display all of the events from today matching the *access* key:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [root@audit ~]# ausearch --start today -i -k access
 ----
@@ -427,7 +443,7 @@ assigned to an audit rule.
 This command lists any events triggered by the pre-defined rules with the `access` key, and the `-i` interpretation option makes the `proctitle` field readable in the output.
 
 . As *root*, display today's events from the *auditlab* user that match the `perm_mod` key:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [root@audit ~]# ausearch --start today -i -k perm_mod --uid auditlab
 ----
@@ -437,7 +453,7 @@ The `--uid` option searches for events that match the given UID.
 Expect this command to list the event generated by the example above in the <<Audit Events Generation>> section.
 
 . As *root*, display all of today's accesses of the *project_tps_report.txt* file:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [root@audit ~]# ausearch --start today -i -f project_tps_report.txt
 ----
@@ -447,7 +463,7 @@ The `-f` option searches for events that match the given file name.
 Expect the command to list the creation and permission modification events from the <<Audit Events Generation>> section.
 
 . As *root*, view all of the events from today matching the `rhkey` key, to search for audit events generated by your custom filter rule:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [root@audit ~]# ausearch --start today -i -k rhkey
 ----
@@ -464,7 +480,7 @@ link:http://man7.org/linux/man-pages/man8/aureport.8.html[aureport(8)^] man page
 
 . While logged into the *audit.example.com* system as *root*, run the following
 commands to create several audit reports for today's activity:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [root@audit ~]# aureport --start today --summary
 [root@audit ~]# aureport --start today --summary -i --file
@@ -479,7 +495,7 @@ from `ausearch` is exactly as it is in the logs. To tell `ausearch` to leave the
 pass the `--raw` formatting option.
 
 . As *root*, run the following command:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [root@audit ~]# ausearch --start today -k access --raw | aureport --summary -i --file
 ----
@@ -494,7 +510,7 @@ events for a specific login whenever you pass the `--proof` command-line option.
 when investigating which programs or files a user accessed during a specific session.
 
 . As *root*, examine an example of `aulast` report:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [root@audit ~]# aulast
 [root@audit ~]# aulast --proof
@@ -506,7 +522,7 @@ audit log. The _aulastlog(8)_ man page provides more information, but even runni
 `aulastlog` without any options results in a useful report.
 
 . As *root*, examine an `aulastlog` report:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 	[root@audit ~]# aulastlog
 ----
@@ -524,7 +540,7 @@ of `ausearch`, can be found in the
 link:http://man7.org/linux/man-pages/man8/ausearch.8.html[ausearch(8)^] man page.
 
 . While logged into the *audit.example.com* system as *root*, view samples of the `csv` and `text` formats:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [root@audit ~]# ausearch --start today --format csv
 [root@audit ~]# ausearch --start today --format text
@@ -537,7 +553,7 @@ Comma Separated Values (CSV) format.
 == 3.3: Resetting the Lab System (Optional)
 
 . If you want to restart the lab from scratch, run the following as *root* on *audit.example.com*:
-+
+[source,bash,role="execute",subs=attributes+]
 ----
 [root@audit ~]# rm /etc/audit/rules.d/*
 [root@audit ~]# cp /usr/share/doc/audit/rules/10-base-config.rules /etc/audit/rules.d
@@ -545,5 +561,3 @@ Comma Separated Values (CSV) format.
 [root@audit ~]# cp /etc/default/grub.bak /etc/default/grub
 [root@audit ~]# grub2-mkconfig -o `find /boot -name grub.cfg`
 ----
-
-
