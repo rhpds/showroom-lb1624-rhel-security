@@ -34,8 +34,8 @@ Join us on this journey to enhance your RHEL security skills and protect your sy
 
 As part of this lab you will have access to 2 machines.
 
-* node
-* server
+* rhel
+* infra1
 
 
 **Lab Note:** If Using Red Hat Demo System (RHPDS)
