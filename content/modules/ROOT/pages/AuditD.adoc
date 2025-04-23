@@ -34,78 +34,6 @@ AuditD is an integral component of the Linux audit subsystem, responsible for ma
 
 AuditD logs its records in dedicated log files, usually located at `/var/log/audit/audit.log`, where administrators can analyze them using various tools (e.g., `ausearch` or `aulast`). By leveraging AuditD, organizations can enforce accountability and compliance with security policies and regulatory requirements.
 
----
-
-# The Top 5 Issues That People Have With AuditD
-
-1. **Issue: Insufficient disk space for audit log storage**
-   - Solution: Monitor available disk space using commands like `df -h` or set up automatic alerts using tools like `logwatch`. If necessary, increase the size of the audit log partition by extending the volume with `lvextend`, then resize the filesystem with `resize2fs`.
-
-[source,bash,role="execute",subs=attributes+]
-----
-   # Check available disk space
-   df -h
-   # Extend logical volume (replace 'audit_vg' and 'audit_log' with your volumes)
-   lvextend -L +10G /dev/audit_vg/audit_log
-   # Resize filesystem on extended partition
-   resize2fs /dev/audit_vg/audit_log
-  
-----
-
-2. **Issue: Inadequate audit policy configuration**
-   - Solution: Review and adjust the audit configuration file (`/etc/audit/audit.rules`) to ensure that critical events are being audited. Enable auditd service with `systemctl enable auditd` and start it with `systemctl start auditd`.
-
-[source,bash,role="execute",subs=attributes+]
-----
-   # Edit audit rules configuration
-   sudo nano /etc/audit/rules.d/audit.rules
-   # Add or modify rules, e.g., to monitor file access
-   -w /var/log/files -p wa -k file_access_monitor
-   # Apply new rules without restarting auditd
-   sudo augenrules --load
-
-----
-
-3. **Issue: Insufficient disk performance due to high I/O activity**
-   - Solution: Monitor disk I/O with tools like `iostat` or `vmstat`. Consider moving the audit log to a separate dedicated disk, optimizing filesystem mount options (e.g., noatime), or using SSDs for better performance.
-
-[source,bash,role="execute",subs=attributes+]
-----
-   # Monitor disk I/O
-   iostat -dx 1
-   # Mount options example, add to '/etc/fstab'
-   /dev/sda1 /var/log ext4 defaults,noatime 0 2
-
-----
-
-4. **Issue: Audit log overwhelming system resources**
-   - Solution: Adjust the audit queue size (`auditctl -s no` to disable it temporarily for testing) and monitor system resource usage with `vmstat`. Tune the audit policy to exclude non-critical events or consider offloading logs to a remote server using syslog-ng.
-
-[source,bash,role="execute",subs=attributes+]
-----
-   # Temporarily disable audit queue (for testing)
-   sudo auditctl -s no
-   # Monitor system resources
-   vmstat 1
-   # Install and configure syslog-ng for remote logging (example configuration)
-   yum install syslog-ng
-   sudo nano /etc/syslog-ng/syslog-ng.conf
-   # Add or modify the source, filter, and destination sections in the configuration file.
-
-----
-
-5. **Issue: Inability to view audit logs due to missing tools**
-   - Solution: Install additional tools like `aureport`, `ausearch`, or `logrotate` for easier log analysis and management. Enable automatic log rotation with `logrotate`.
-
-[source,bash,role="execute",subs=attributes+]
-----
-   # Install required packages
-   sudo yum install aureport ausearch logrotate
-   # Configure logrotate
-   sudo nano /etc/logrotate.d/audit
-   # Add necessary settings to rotate audit logs daily and retain 30 days worth of logs
-
-----
 
 ---
 
@@ -560,4 +488,77 @@ Comma Separated Values (CSV) format.
 [root@audit ~]# augenrules --load
 [root@audit ~]# cp /etc/default/grub.bak /etc/default/grub
 [root@audit ~]# grub2-mkconfig -o `find /boot -name grub.cfg`
+----
+
+---
+
+# The Top 5 Issues That People Have With AuditD
+
+1. **Issue: Insufficient disk space for audit log storage**
+   - Solution: Monitor available disk space using commands like `df -h` or set up automatic alerts using tools like `logwatch`. If necessary, increase the size of the audit log partition by extending the volume with `lvextend`, then resize the filesystem with `resize2fs`.
+
+[source,bash,role="execute",subs=attributes+]
+----
+   # Check available disk space
+   df -h
+   # Extend logical volume (replace 'audit_vg' and 'audit_log' with your volumes)
+   lvextend -L +10G /dev/audit_vg/audit_log
+   # Resize filesystem on extended partition
+   resize2fs /dev/audit_vg/audit_log
+  
+----
+
+2. **Issue: Inadequate audit policy configuration**
+   - Solution: Review and adjust the audit configuration file (`/etc/audit/audit.rules`) to ensure that critical events are being audited. Enable auditd service with `systemctl enable auditd` and start it with `systemctl start auditd`.
+
+[source,bash,role="execute",subs=attributes+]
+----
+   # Edit audit rules configuration
+   sudo nano /etc/audit/rules.d/audit.rules
+   # Add or modify rules, e.g., to monitor file access
+   -w /var/log/files -p wa -k file_access_monitor
+   # Apply new rules without restarting auditd
+   sudo augenrules --load
+
+----
+
+3. **Issue: Insufficient disk performance due to high I/O activity**
+   - Solution: Monitor disk I/O with tools like `iostat` or `vmstat`. Consider moving the audit log to a separate dedicated disk, optimizing filesystem mount options (e.g., noatime), or using SSDs for better performance.
+
+[source,bash,role="execute",subs=attributes+]
+----
+   # Monitor disk I/O
+   iostat -dx 1
+   # Mount options example, add to '/etc/fstab'
+   /dev/sda1 /var/log ext4 defaults,noatime 0 2
+
+----
+
+4. **Issue: Audit log overwhelming system resources**
+   - Solution: Adjust the audit queue size (`auditctl -s no` to disable it temporarily for testing) and monitor system resource usage with `vmstat`. Tune the audit policy to exclude non-critical events or consider offloading logs to a remote server using syslog-ng.
+
+[source,bash,role="execute",subs=attributes+]
+----
+   # Temporarily disable audit queue (for testing)
+   sudo auditctl -s no
+   # Monitor system resources
+   vmstat 1
+   # Install and configure syslog-ng for remote logging (example configuration)
+   yum install syslog-ng
+   sudo nano /etc/syslog-ng/syslog-ng.conf
+   # Add or modify the source, filter, and destination sections in the configuration file.
+
+----
+
+5. **Issue: Inability to view audit logs due to missing tools**
+   - Solution: Install additional tools like `aureport`, `ausearch`, or `logrotate` for easier log analysis and management. Enable automatic log rotation with `logrotate`.
+
+[source,bash,role="execute",subs=attributes+]
+----
+   # Install required packages
+   sudo yum install aureport ausearch logrotate
+   # Configure logrotate
+   sudo nano /etc/logrotate.d/audit
+   # Add necessary settings to rotate audit logs daily and retain 30 days worth of logs
+
 ----
