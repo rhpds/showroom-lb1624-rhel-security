@@ -143,8 +143,9 @@ type=AVC msg=audit(1745005493.034:185): avc:  denied  { read } for  pid=1747 com
 .....
 
 This seems like the right event, but the readability can be improved. Let's try using the `sealert` command. We'll need to install the package before we run it:
+[source,bash,role="execute",subs=attributes+]
 ----
-sudo dnf isntall setroubleshoot-server -y
+sudo dnf install setroubleshoot-server -y
 sudo sealert --analyze /var/log/audit/audit.log
 ----
 
