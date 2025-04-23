@@ -119,7 +119,7 @@ ls -lZ /var/www/html/index.html
 We see the SELinux label has a type that seems appropriate for a home directory:
 .....
 [lab-user@rhel ~]$ ls -lZ /var/www/html/index.html
--rw-r--r--. 1 bhoppus bhoppus unconfined_u:object_r:user_home_t:s0 0 Apr 18 13:59 /var/www/html/index.html
+-rw-r--r--. 1 lab-user lab-user unconfined_u:object_r:user_home_t:s0 0 Apr 18 13:59 /var/www/html/index.html
 [lab-user@rhel ~]$ 
 .....
 
