@@ -151,7 +151,11 @@ sudo sealert --analyze /var/log/audit/audit.log
 
 There's a lot here, so let's break down the relevant parts:
 .....
+<<< OUTPUT ABRIDGED >>>
+
 SELinux is preventing /usr/sbin/httpd from read access on the file index.html.
+
+<<< OUTPUT ABRIDGED >>>
 .....
 
 This confirms that this is the error event we need to review. We then see a helpful suggestion:
