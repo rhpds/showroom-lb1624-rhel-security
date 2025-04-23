@@ -19,8 +19,8 @@ You are working on a black box.
 
 You are given access and credentials to a hypervisor machine. 
 The goal is to create 2 machines that we will use.
-First we will create a Virtual Machine as a Ansible Control Node also known as a Bastion.
-Second we will create a Virtual Machine as an Ansible Node to push changes too.
+* Red Hat Enterprise Linux 9.5
+* Red Hat Enterprise Linux 9.5 (Log Server)
 You can add more nodes or other version of RHEL to have a testbed of RHEL 7-9.
 
 == 1.2 Expectations of your Host OS
@@ -156,9 +156,9 @@ Then set a root password into the image
 
 [source,ini,role=execute,subs=attributes+]
 ----
-sudo virt-customize -a /var/lib/libvirt/images/bastion-rhel-9.4-x86_64-kvm.qcow2 --root-password password:MySecurePassphrasefor2024 --uninstall cloud-init
+sudo virt-customize -a /var/lib/libvirt/images/bastion-rhel-9.4-x86_64-kvm.qcow2 --root-password password:MySecurePassphrasefor2025 --uninstall cloud-init
 
-sudo virt-customize -a /var/lib/libvirt/images/node1-rhel-9.4-x86_64-kvm.qcow2 --root-password password:MySecurePassphrasefor2024 --uninstall cloud-init
+sudo virt-customize -a /var/lib/libvirt/images/node1-rhel-9.4-x86_64-kvm.qcow2 --root-password password:MySecurePassphrasefor2025 --uninstall cloud-init
 ----
 
 
@@ -192,13 +192,13 @@ sudo virt-customize -a /var/lib/libvirt/images/node1-rhel-9.4-x86_64-kvm.qcow2 -
 ** On the right hand side, click the button "Add Bridge",
 ** Click Add Button
 
-=== 1.5.5 Configure Cockpit for bastion Virtual Machine
+=== 1.5.5 Configure Cockpit for server Virtual Machine
 
 * On the left hand side find and click **Virtual machines**,
 ** In the top Right side click the **Import VM**
 *** In the Name feild we want to use **bastion**
 *** On the Connections option we want to make sure that **System** is selected
-*** On the Disk image we want to use this path **/var/lib/libvirt/images/bastion-rhel-9.4-x86_64-kvm.qcow2**
+*** On the Disk image we want to use this path **/var/lib/libvirt/images/server-rhel-9.4-x86_64-kvm.qcow2**
 *** On Operation system choose Red Hat Enterprise Linux 9
 *** On Memory go with the default 2 GB of Ram
 *** Then Click the **Import and Run** 
@@ -210,7 +210,7 @@ Click on that node and you should see and Overview, Usage and Console window.
 Click on the Console window, and log in with your root user and password.
 
 username: root
-password: MySecurePassphrasefor2024
+password: MySecurePassphrasefor2025
 
 Then you will want to find out what the ip address is for bastion,
 In the console type
@@ -271,7 +271,7 @@ Click on that node and you should see and Overview, Usage and Console window.
 Click on the Console window, and log in with your root user and password.
 
 username: root
-password: MySecurePassphrasefor2024
+password: MySecurePassphrasefor2025
 
 Then you will want to find out what the ip address is for node1,
 In the console type
