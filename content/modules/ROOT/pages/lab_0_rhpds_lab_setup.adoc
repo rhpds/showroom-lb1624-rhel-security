@@ -25,8 +25,8 @@ So first thing we need to do is to copy the SSH key from our bastion host to con
 
 There are 2 machines we will be connecting to.
 
-* bastion
-* node1
+* server
+* node
 
 == 1.2: Create a SSH key pair
 
