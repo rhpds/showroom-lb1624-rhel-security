@@ -160,6 +160,8 @@ SELinux is preventing /usr/sbin/httpd from read access on the file index.html.
 
 This confirms that this is the error event we need to review. We then see a helpful suggestion:
 .....
+<<< OUTPUT ABRIDGED >>>
+
 If you want to allow httpd to read user content
 Then you must tell SELinux about this by enabling the 'httpd_read_user_content' boolean.
 
@@ -175,6 +177,8 @@ Do
 allow this access for now by executing:
 # ausearch -c 'httpd' --raw | audit2allow -M my-httpd
 # semodule -X 300 -i my-httpd.pp
+
+<<< OUTPUT ABRIDGED >>>
 .....
 
 As helpful as this is, it's not what we're after. We don't want to change SELinux booleans or policies. We want to change the label to what the system expects by default. Find this line under "Additional Information":
