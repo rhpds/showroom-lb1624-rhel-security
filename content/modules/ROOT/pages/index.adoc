@@ -28,7 +28,7 @@ Attendees will leave with practical knowledge on how to install, configure, and 
 
 Join us on this journey to enhance your RHEL security skills and protect your systems from the ever-evolving landscape of cyber threats.
 
-Lab Note: If Using Red Hat Demo System (RHPDS)
+**Lab Note:** If Using Red Hat Demo System (RHPDS)
 The terminal window to your right is already logged into the lab environment as the lab-user user via ssh. All steps of this lab are to be completed as the lab-user user on the bastion server.
 
 You should be able to click the clipboard icon in the code box to copy the command, and you will eather use the middle mouse button or right click and paste. The keyboard shortcuts for copy and paste (ctrl+c and ctrl+v) wont’t work in this.
