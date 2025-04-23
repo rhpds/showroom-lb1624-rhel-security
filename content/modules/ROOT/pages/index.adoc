@@ -37,6 +37,13 @@ As part of this lab you will have access to 2 machines.
 * rhel
 * infra1
 
+You will have a couple of accounts you will have access to.
+
+* lab-user
+* ec2-user
+* log-sa
+* lab-sa
+
 
 **Lab Note:** If Using Red Hat Demo System (RHPDS)
 The terminal window to your right is already logged into the lab environment as the lab-user user via ssh. All steps of this lab are to be completed as the lab-user user on the bastion server.
