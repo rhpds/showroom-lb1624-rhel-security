@@ -90,6 +90,7 @@ sudo mv ~/index.html /var/www/html/
 ----
 
 Test your webserver again:
+[source,bash,role="execute",subs=attributes+]
 ----
 curl localhost
 ----
