@@ -69,26 +69,22 @@ information for improved archival value).
 The `/etc/audit/auditd.conf` file
 can be modified using any text editor. In this section, you use the `sed` command to edit the file.
 
-. If you are not already there, log in to the workstation bastion host as *lab-user* from your desktop system (replacing `GUID` with your lab-provided GUID and, if needed, using *r3dh4t1!* as the password):
+. If you are not already there, log in to the rhel host as *lab-user* from your desktop system or in the showroom window:
 
 [source,bash,role="execute",subs=attributes+]
 ----
-ssh lab-user@workstation-GUID.rhpds.opentlc.com
-----
-
-. Log in to the *bastion* host as *root*:
-
-[source,bash,role="execute",subs=attributes+]
-----
-ssh root@audit.example.com
+ssh lab-user@rhel
 ----
 
 . As *root*, edit the `auditd.conf` file:
 [source,bash,role="execute",subs=attributes+]
 ----
-sed -e 's/^flush.*/flush = INCREMENTAL_ASYNC/' -i /etc/audit/auditd.conf
-sed -e 's/^freq.*/freq = 50/' -i /etc/audit/auditd.conf
-sed -e 's/^log_format.*/log_format = ENRICHED/' -i /etc/audit/auditd.conf
+sudo sed -e 's/^flush.*/flush = INCREMENTAL_ASYNC/' -i /etc/audit/auditd.conf
+
+sudo sed -e 's/^freq.*/freq = 50/' -i /etc/audit/auditd.conf
+
+sudo sed -e 's/^log_format.*/log_format = ENRICHED/' -i /etc/audit/auditd.conf
+
 ----
 
 After the configuration file is updated, you must signal the audit
@@ -97,7 +93,7 @@ daemon to reload its configuration.
 . As *root*, force `auditd` to reload its configuration:
 [source,bash,role="execute",subs=attributes+]
 ----
-service auditd reload
+sudo service auditd reload
 ----
 
 Expect to see it return an acknowledgement similar to:
@@ -105,30 +101,32 @@ Expect to see it return an acknowledgement similar to:
 ----
 Reconfiguring: [  OK  ]
 ----
-+
+
 The audit daemon can dump a small report about its configuration and some facts about
 its current state. This can help you diagnose problems encountered by the audit daemon.
 
 . As *root*, determine the audit daemon's state:
+
 [source,bash,role="execute",subs=attributes+]
 ----
-service auditd state
+sudo service auditd state
 ----
-+
+
 Expect to see it return an acknowledgement similar to the following, with a list of values including the current time, process priority, configuration options, and disk free space:
-[source,bash,role="execute",subs=attributes+]
+
 ----
 Getting auditd internal state: [  OK  ]
 ----
-+
+
 Usually the audit daemon enables the kernel's audit subsystem.
 
 . As *root*, get the kernel's state to verify that the audit system is enabled:
+
 [source,bash,role="execute",subs=attributes+]
 ----
-auditctl -s
+sudo auditctl -s
 ----
-+
+
 The `1` in the first line of the output of the `auditctl` command indicates that it is enabled. The `pid` line provides the PID of the audit daemon. The rest of the output is the kernel status, not including rules.
 
 === 3.1.2: Configuring the Linux Kernel
