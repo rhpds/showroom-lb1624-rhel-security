@@ -84,7 +84,6 @@ sudo sed -e 's/^flush.*/flush = INCREMENTAL_ASYNC/' -i /etc/audit/auditd.conf
 sudo sed -e 's/^freq.*/freq = 50/' -i /etc/audit/auditd.conf
 
 sudo sed -e 's/^log_format.*/log_format = ENRICHED/' -i /etc/audit/auditd.conf
-
 ----
 
 After the configuration file is updated, you must signal the audit
