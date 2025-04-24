@@ -314,34 +314,35 @@ the system is configured as described earlier in this lab.
 
 === 3.2.1: Generating Audit Events
 
-. Open another terminal shell on the workstation bastion host, and from there log in to the
+. Using the terminal shell on the rhel host, and from there log in to the
 *audit.example.com* system as the *auditlab* user:
+
 [source,bash,role="execute",subs=attributes+]
 ----
-ssh auditlab@audit.example.com
+ssh log-sa@rhel	
 ----
 
 . Run the following commands to generate some interesting events in the audit log:
 [source,bash,role="execute",subs=attributes+]
 ----
-[auditlab@audit ~]$ vi /etc/shadow
+sudo vi /etc/shadow
 (Type :q! to exit vi)
 ----
 [source,bash,role="execute",subs=attributes+]
 ----
-[auditlab@audit ~]$ ping -c 1 127.0.0.1
+ping -c 1 127.0.0.1
 ----
 [source,bash,role="execute",subs=attributes+]
 ----
-[auditlab@audit ~]$ vi ~/project_tps_report.txt
+vi ~/log_everything_and_the_kitchen_sink.txt
 (Type: i to go into insert mode)
-(Type: This is my TPS report)
+(Type: "Logging everything, including the kitchen sink, because why not? Let's see what happens!")
 (Press *Esc*)
 (Type :wq! to save the file and exit vi)
 ----
 [source,bash,role="execute",subs=attributes+]
 ----
-[auditlab@audit ~]$ chmod 0664 ~/project_tps_report.txt
+[auditlab@audit ~]$ chmod 0664 ~/log_everything_and_the_kitchen_sink.txt
 ----
 
 === 3.2.2: Searching for Events
@@ -507,6 +508,10 @@ Comma Separated Values (CSV) format.
 [root@audit ~]# cp /etc/default/grub.bak /etc/default/grub
 [root@audit ~]# grub2-mkconfig -o `find /boot -name grub.cfg`
 ----
+
+== 3.4 Setting up a Remote log sever
+
+
 
 ---
 
