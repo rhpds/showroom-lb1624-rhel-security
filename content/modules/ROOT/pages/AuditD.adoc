@@ -151,17 +151,25 @@ Technical Implementation Guide (STIG) for Red Hat Enterprise Linux.
 
 . While logged in to the *audit.example.com* system as *root*, enable a number of
 pre-defined audit filters:
+
 [source,bash,role="execute",subs=attributes+]
 ----
-cat /usr/share/doc/audit/rules/README-rules
-rm /etc/audit/rules.d/*
-cp /usr/share/doc/audit/rules/10-base-config.rules /etc/audit/rules.d
-cp /usr/share/doc/audit/rules/30-stig.rules /etc/audit/rules.d
-cp /usr/share/doc/audit/rules/31-privileged.rules /etc/audit/rules.d
-cp /usr/share/doc/audit/rules/99-finalize.rules /etc/audit/rules.d
-augenrules --load
+sudo cat /usr/share/doc/audit/rules/README-rules
+
+sudo rm /etc/audit/rules.d/*
+
+sudo cp /usr/share/doc/audit/rules/10-base-config.rules /etc/audit/rules.d
+
+sudo cp /usr/share/doc/audit/rules/30-stig.rules /etc/audit/rules.d
+
+sudo cp /usr/share/doc/audit/rules/31-privileged.rules /etc/audit/rules.d
+
+sudo cp /usr/share/doc/audit/rules/99-finalize.rules /etc/audit/rules.d
+
+sudo augenrules --load
+
 ----
-+
+
 The `augenrules` tool combines all of the `*.rules` files located in
 `/etc/audit/rules.d` into the `/etc/audit/audit.rules` file and loads them
 using the `auditctl` command. You can remove or rename any of these files
@@ -171,9 +179,9 @@ and rerun the `augenrules --load` command to reconfigure your system.
 that you can inspect what is loaded:
 [source,bash,role="execute",subs=attributes+]
 ----
-auditctl -l
+sudo auditctl -l
 ----
-+
+
 Expect to see many audit rules output from the kernel.
 
 ==== 3.1.2.2: Creating Custom Rules
@@ -218,38 +226,47 @@ more detail.)
 
 . While logged into the *audit.example.com* system as *root*, add a custom audit
 filter for the `/usr/bin/ping` application:
+
 [source,bash,role="execute",subs=attributes+]
 ----
-auditctl -a always,exit -F exe=/usr/bin/ping -k rhkey
+sudo auditctl -a always,exit -F exe=/usr/bin/ping -k rhkey
 ----
 
 . As *root*, add a new rule file to `/etc/audit/rules.d` and reload your configuration
  to make your custom filter rule persistent:
+
 [source,bash,role="execute",subs=attributes+]
 ----
-echo "-a always,exit -S all -F exe=/usr/bin/ping -F key=rhkey" > /etc/audit/rules.d/70-rhkey_lab.rules
+sudo echo "-a always,exit -S all -F exe=/usr/bin/ping -F key=rhkey" > /etc/audit/rules.d/70-rhkey_lab.rules
 
-augenrules --load
+sudo augenrules --load
+
 ----
 +
 In addition to modifying custom filter rules, you can adjust the base configuration of the audit subsystem in the Linux kernel using `auditctl`.
 
 . As *root*, increase the audit backlog buffer to `8192` entries:
 
-auditctl -b 8192
-+
+[source,bash,role="execute",subs=attributes+]
+----
+sudo auditctl -b 8192
+----
+
 This setting is confirmed by output similar to the status command.
-+
+
 If you want to make the configuration change persistent, you can
 create a new file in `/etc/audit/rules.d` with the configuration and reload the
 audit rules.
 
 . As *root*, make the backlog changes persistent:
+
 [source,bash,role="execute",subs=attributes+]
 ----
-echo "-b 8192" > /etc/audit/rules.d/15-rhkey_kernel.rules
+sudo touch /etc/audit/rules.d/15-rhkey_kernel.rules
 
-augenrules --load
+sudo echo "-b 8192" > /etc/audit/rules.d/15-rhkey_kernel.rules
+
+sudo augenrules --load
 ----
 
 ==== 3.1.2.3: Defining Kernel Boot Parameters
@@ -266,25 +283,29 @@ In this section, you modify `/etc/default/grub` to add audit-related configurati
 kernel's boot prompt. Then you regenerate the boot menu so that it takes effect.
 
 . As *root*, back up the current `/etc/default/grub` file and edit it to set the `audit` and `audit_backlog_limit` options:
+
 [source,bash,role="execute",subs=attributes+]
 ----
-cp /etc/default/grub /etc/default/grub.bak
+sudo cp /etc/default/grub /etc/default/grub.bak
 
-sed -e '/GRUB_CMDLINE_LINUX/s/\"/ audit=1 audit_backlog_limit=8192\"/2' -i /etc/default/grub
+sudo sed -e '/GRUB_CMDLINE_LINUX/s/\"/ audit=1 audit_backlog_limit=8192\"/2' -i /etc/default/grub
 ----
 
 . Verify that the `audit=1 and audit_backlog_limit=8192` options are present:
+
 [source,bash,role="execute",subs=attributes+]
 ----
-grep GRUB_CMDLINE_LINUX /etc/default/grub
+sudo grep GRUB_CMDLINE_LINUX /etc/default/grub
 ----
 
 . As *root*, regenerate the grub boot menu:
+
 [source,bash,role="execute",subs=attributes+]
 ----
-grub2-mkconfig -o `find /boot -name grub.cfg`
+sudo grub2-mkconfig -o `find /boot/grub2/grub.cfg -name grub.cfg`
 ----
 * The menu is in different places based on whether you have a BIOS- or UEFI-based machine. The `find` command locates the file for you.
+
 
 == 3.2: Inspecting the Audit Log
 
