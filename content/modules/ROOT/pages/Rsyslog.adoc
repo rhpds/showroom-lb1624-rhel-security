@@ -245,3 +245,5 @@ Run the playbook using:
 ----
 ansible-playbook -i hosts log_server.yml
 ----
+== Configure your machines to send logs to your syslog server
+
