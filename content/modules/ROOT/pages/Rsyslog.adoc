@@ -63,6 +63,8 @@ You'll be using Ansible core with RHEL 9, so lets get it installed.
 [source,ini,role=execute,subs=attributes+]
 ----
 sudo dnf install ansible-core -y
+
+sudo dnf install rhel-system-roles -y
 ----
 
 
