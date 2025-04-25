@@ -186,7 +186,8 @@ touch ~/ansible/log_server.yml
 
 Save this content in a file named log_server.yml:
 
-````
+[source,ini,role=execute,subs=attributes+]
+----
 ---
 - hosts: infra1
   become: yes
@@ -220,27 +221,31 @@ Save this content in a file named log_server.yml:
       service:
         name: rsyslog
         state: restarted
-````
+----
 
 Replace <ansible_host> with the IP address or hostname of the Ansible control node.
 
 To execute the playbook, run the following command on your Ansible control node:
 
-````
+[source,ini,role=execute,subs=attributes+]
+----
 ansible-playbook -i inventory log_server.yml
-````
+----
 
 Replace <inventory_file> with the path to your Ansible inventory file containing infra1. For example, if you are using a simple hosts file named hosts in the same directory as the playbook:
 
-````
+[source,ini,role=execute,subs=attributes+]
+----
 [all:vars]
 ansible_host=<infra1_ip>  # Replace with infra1's IP address or hostname
 
 [infra1]
 <infra1_ip>
-````
+
+----
 Run the playbook using:
 
-````
+[source,ini,role=execute,subs=attributes+]
+----
 ansible-playbook -i hosts log_server.yml
-````
+----
