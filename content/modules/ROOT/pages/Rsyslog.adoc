@@ -156,7 +156,7 @@ ansible -m ping -i inventory localhost
 Then issue a command to check the localhost (bastion) machine
 [source,ini,role=execute,subs=attributes+]
 ----
-ansible -m ping -i inventory node1
+ansible -m ping -i inventory infra1
 ----
 
 If everything is working correctly you should see something like this in your terminal
@@ -177,7 +177,7 @@ Here's a basic Ansible playbook that sets up a remote log server on RHEL 9 named
 This playbook assumes you have already configured the Ansible control node with SSH keys for passwordless authentication.
 
 ````
-touch ~/ansible/log_server.yml:
+touch ~/ansible/log_server.yml 
 ````
 
 Save this content in a file named log_server.yml:
@@ -223,7 +223,7 @@ Replace <ansible_host> with the IP address or hostname of the Ansible control no
 To execute the playbook, run the following command on your Ansible control node:
 
 ````
-ansible-playbook -i <inventory_file> log_server.yml
+ansible-playbook -i inventory log_server.yml
 ````
 
 Replace <inventory_file> with the path to your Ansible inventory file containing infra1. For example, if you are using a simple hosts file named hosts in the same directory as the playbook:
