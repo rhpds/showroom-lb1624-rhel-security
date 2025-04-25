@@ -190,38 +190,33 @@ Save this content in a file named log_server.yml:
 [source,ini,role=execute,subs=attributes+]
 ----
 ---
-- hosts: infra
-  become: yes
+- name: Deploy the logging solution
+  hosts: infra
   tasks:
-    - name: Install necessary packages
-      yum:
-        name:
-          - rsyslog
-          - systemd
-        state: present
-
-    - name: Configure rsyslog
-      copy:
-        dest: /etc/rsyslog.conf
-        content: |
-          # Add the following lines to enable remote logging
-          module(load="imuxsock")
-          module(load="imklog")
-
-          action(type="omtcp"
-              host="<ansible_host>"  # Replace with your ansible_host
-              port="514"
-              queue.size="8192"
-              queue.flush="true"
-              template="RSYSLOG_SyslogProtocol23Format"
-          )
-
-        backup: yes
-
-    - name: Restart rsyslog service
-      service:
-        name: rsyslog
-        state: restarted
+    - name: Filter logs based on a specific value they contain
+      ansible.builtin.include_role:
+        name: rhel-system-roles.logging
+      vars:
+        logging_inputs:
+          - name: files_input
+            type: basics
+        logging_outputs:
+          - name: files_output0
+            type: files
+            property: msg
+            property_op: contains
+            property_value: error
+            path: /var/log/errors.log
+          - name: files_output1
+            type: files
+            property: msg
+            property_op: "!contains"
+            property_value: error
+            path: /var/log/others.log
+        logging_flows:
+          - name: flow0
+            inputs: [files_input]
+            outputs: [files_output0, files_output1]
 ----
 
 Replace <ansible_host> with the IP address or hostname of the Ansible control node.
