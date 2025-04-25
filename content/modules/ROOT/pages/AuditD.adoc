@@ -45,12 +45,12 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
 .*Goal*
 * Become familiar with the auditing capabilities of Red Hat^(R)^ Enterprise Linux^(R)^ (RHEL)
 
-== 3.1: Configuring the Audit Daemon and Kernel
+=== 3.1: Configuring the Audit Daemon and Kernel
 
 There are two main audit components in Red Hat Enterprise Linux: the audit
 daemon and the kernel itself. In this section, you configure both.
 
-=== 3.1.1: Configuring the Audit Daemon
+=== Step 1: Configuring the Audit Daemon
 
 When the audit daemon is started during the boot process, it reads its
 configuration information from the file `/etc/audit/auditd.conf`.
@@ -77,6 +77,7 @@ ssh lab-user@rhel
 ----
 
 . As *root*, edit the `auditd.conf` file:
+
 [source,bash,role="execute",subs=attributes+]
 ----
 sudo sed -e 's/^flush.*/flush = INCREMENTAL_ASYNC/' -i /etc/audit/auditd.conf
@@ -90,6 +91,7 @@ After the configuration file is updated, you must signal the audit
 daemon to reload its configuration.
 
 . As *root*, force `auditd` to reload its configuration:
+
 [source,bash,role="execute",subs=attributes+]
 ----
 sudo service auditd reload
@@ -128,7 +130,7 @@ sudo auditctl -s
 
 The `1` in the first line of the output of the `auditctl` command indicates that it is enabled. The `pid` line provides the PID of the audit daemon. The rest of the output is the kernel status, not including rules.
 
-=== 3.1.2: Configuring the Linux Kernel
+=== Step 3: Configuring the Linux Kernel
 
 The Linux kernel’s audit subsystem can be configured with the `auditctl`
 command. By using `auditctl` the administrator can add audit event filtering
@@ -136,7 +138,7 @@ rules as well as tune the audit subsystem in the kernel. The configuration
 parameters are explained in the
 link:http://man7.org/linux/man-pages/man8/auditctl.8.html[auditctl(8)^] man page.
 
-==== 3.1.2.1: Enabling Preconfigured Rules
+=== Step 4: Enabling Preconfigured Rules
 
 A number of preconfigured audit filter rules are provided with Red Hat
 Enterprise Linux. You can find them in `/usr/share/doc/audit-*`. These filter
@@ -176,6 +178,7 @@ and rerun the `augenrules --load` command to reconfigure your system.
 
 . Now that rules are loaded, working as *root*, have the kernel dump the currently loaded rules so
 that you can inspect what is loaded:
+
 [source,bash,role="execute",subs=attributes+]
 ----
 sudo auditctl -l
@@ -183,7 +186,7 @@ sudo auditctl -l
 
 Expect to see many audit rules output from the kernel.
 
-==== 3.1.2.2: Creating Custom Rules
+==== Step 5: Creating Custom Rules
 
 Custom audit filters can be loaded into the kernel using the `auditctl`
 command. The various filter options are explained in the
@@ -268,7 +271,7 @@ sudo echo "-b 8192" > /etc/audit/rules.d/15-rhkey_kernel.rules
 sudo augenrules --load
 ----
 
-==== 3.1.2.3: Defining Kernel Boot Parameters
+=== Step 6: Defining Kernel Boot Parameters
 
 The kernel also has two kernel boot command-line options that affect the audit system:
 `audit` and `audit_backlog_limit`. The `audit` configuration option takes either a `1` or `0`, which
@@ -306,13 +309,13 @@ sudo grub2-mkconfig -o `find /boot/grub2/grub.cfg -name grub.cfg`
 * The menu is in different places based on whether you have a BIOS- or UEFI-based machine. The `find` command locates the file for you.
 
 
-== 3.2: Inspecting the Audit Log
+=== Step 7: Inspecting the Audit Log
 
 The exercises below show how to search through the audit logs and generate
 summary audit reports. It is important to note that this section requires that
 the system is configured as described earlier in this lab.
 
-=== 3.2.1: Generating Audit Events
+=== Step 8: Generating Audit Events
 
 . Using the terminal shell on the rhel host, and from there log in to the
 *rhel* system as the *log-sa* user:
@@ -341,7 +344,7 @@ echo "Logging everything, including the kitchen sink, because why not? Let's see
 chmod 0664 ~/log_everything_and_the_kitchen_sink.txt
 ----
 
-=== 3.2.2: Searching for Events
+=== Step 9: Searching for Events
 
 While the audit logs are plain text files, and normal Linux text searching tools
 (e.g. `grep`) can be used to search the audit logs, the audit userspace tools
@@ -414,7 +417,7 @@ sudo ausearch --start today -i -k rhkey
 +
 Expect this to list the event from the `ping` command in the <<Audit Events Generation>> section.
 
-=== 3.2.3: Generating Reports
+=== Step 10: Generating Reports
 
 Included in the Audit userspace tools are three utilities that can be used to
 generate a number of reports from the audit log: `aureport`, `aulast`, and
@@ -473,7 +476,7 @@ audit log. The _aulastlog(8)_ man page provides more information, but even runni
 sudo aulastlog
 ----
 
-=== 3.2.4: Transforming Audit Logs
+=== Step 11: Transforming Audit Logs
 
 In addition to searching through the audit logs, the `ausearch` tool can also
 be used to transform the results into different formats. If you have already
@@ -492,12 +495,12 @@ sudo ausearch --start today --format csv
 
 sudo ausearch --start today --format text
 ----
-+
+
 The CSV output is particularly interesting as it can be imported into
 LibreOffice or any other spreadsheet program that accepts files in the
 Comma Separated Values (CSV) format.
 
-== 3.3: Resetting the Lab System (Optional)
+=== Resetting the Lab System (Optional)
 
 . If you want to restart the lab from scratch, run the following as *root* on *audit.example.com*:
 [source,bash,role="execute",subs=attributes+]
