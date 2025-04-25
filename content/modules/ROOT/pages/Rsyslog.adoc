@@ -120,8 +120,8 @@ You will want to copy the following and paste it into the terminal.
 localhost
 
 
-[nodes]
-node1 ansible_host=YOURNODE1IPADDRESS
+[infra]
+infra1
 
 ----
 Under the nodes section is where you will put your node1 ip addesss you made note of earlier in the workshop.
