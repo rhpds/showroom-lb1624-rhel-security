@@ -513,10 +513,6 @@ sudo cp /etc/default/grub.bak /etc/default/grub
 sudo grub2-mkconfig -o `find /boot -name grub.cfg`
 ----
 
-== 3.4 Setting up a Remote log sever
-
-
-
 ---
 
 # The Top 5 Issues That People Have With AuditD
