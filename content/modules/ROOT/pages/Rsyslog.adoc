@@ -190,7 +190,7 @@ Save this content in a file named log_server.yml:
 [source,ini,role=execute,subs=attributes+]
 ----
 ---
-- hosts: infra1
+- hosts: infra
   become: yes
   tasks:
     - name: Install necessary packages
