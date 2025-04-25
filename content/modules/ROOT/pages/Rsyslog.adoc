@@ -180,9 +180,10 @@ Here's a basic Ansible playbook that sets up a remote log server on RHEL 9 named
 
 This playbook assumes you have already configured the Ansible control node with SSH keys for passwordless authentication.
 
-````
+[source,ini,role=execute,subs=attributes+]
+----
 touch ~/ansible/log_server.yml 
-````
+----
 
 Save this content in a file named log_server.yml:
 
