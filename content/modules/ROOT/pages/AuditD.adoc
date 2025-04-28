@@ -45,13 +45,14 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
 .*Goal*
 * Become familiar with the auditing capabilities of Red Hat^(R)^ Enterprise Linux^(R)^ (RHEL)
 
-=== 3.1: Configuring the Audit Daemon and Kernel
+=== Step 1: Configuring the Audit Daemon and Kernel
 
 There are two main audit components in Red Hat Enterprise Linux: the audit
 daemon and the kernel itself. In this section, you configure both.
 
-=== Step 1: Configuring the Audit Daemon
-
+=== Step 2: Configuring the Audit Daemon
++
+--
 When the audit daemon is started during the boot process, it reads its
 configuration information from the file `/etc/audit/auditd.conf`.
 The configuration options are explained in the link:http://man7.org/linux/man-pages/man5/auditd.conf.5.html[auditd.conf(5)^]
@@ -129,7 +130,7 @@ sudo auditctl -s
 ----
 
 The `1` in the first line of the output of the `auditctl` command indicates that it is enabled. The `pid` line provides the PID of the audit daemon. The rest of the output is the kernel status, not including rules.
-
+--
 === Step 3: Configuring the Linux Kernel
 
 The Linux kernel’s audit subsystem can be configured with the `auditctl`
