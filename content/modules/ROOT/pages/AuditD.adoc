@@ -45,13 +45,12 @@ AuditD logs its records in dedicated log files, usually located at `/var/log/aud
 .*Goal*
 * Become familiar with the auditing capabilities of Red Hat^(R)^ Enterprise Linux^(R)^ (RHEL)
 
-=== Step 1: Configuring the Audit Daemon and Kernel
+== Step 1: Configuring the Audit Daemon and Kernel
 
 There are two main audit components in Red Hat Enterprise Linux: the audit
 daemon and the kernel itself. In this section, you configure both.
 
-=== Step 2: Configuring the Audit Daemon
-Step 2:::
+== Step 2: Configuring the Audit Daemon
 
 When the audit daemon is started during the boot process, it reads its
 configuration information from the file `/etc/audit/auditd.conf`.
@@ -131,7 +130,7 @@ sudo auditctl -s
 
 The `1` in the first line of the output of the `auditctl` command indicates that it is enabled. The `pid` line provides the PID of the audit daemon. The rest of the output is the kernel status, not including rules.
 
-=== Step 3: Configuring the Linux Kernel
+== Step 3: Configuring the Linux Kernel
 
 The Linux kernel’s audit subsystem can be configured with the `auditctl`
 command. By using `auditctl` the administrator can add audit event filtering
@@ -139,7 +138,7 @@ rules as well as tune the audit subsystem in the kernel. The configuration
 parameters are explained in the
 link:http://man7.org/linux/man-pages/man8/auditctl.8.html[auditctl(8)^] man page.
 
-=== Step 4: Enabling Preconfigured Rules
+== Step 4: Enabling Preconfigured Rules
 
 A number of preconfigured audit filter rules are provided with Red Hat
 Enterprise Linux. You can find them in `/usr/share/doc/audit-*`. These filter
@@ -187,7 +186,7 @@ sudo auditctl -l
 
 Expect to see many audit rules output from the kernel.
 
-==== Step 5: Creating Custom Rules
+== Step 5: Creating Custom Rules
 
 Custom audit filters can be loaded into the kernel using the `auditctl`
 command. The various filter options are explained in the
@@ -272,7 +271,7 @@ sudo echo "-b 8192" > /etc/audit/rules.d/15-rhkey_kernel.rules
 sudo augenrules --load
 ----
 
-=== Step 6: Defining Kernel Boot Parameters
+== Step 6: Defining Kernel Boot Parameters
 
 The kernel also has two kernel boot command-line options that affect the audit system:
 `audit` and `audit_backlog_limit`. The `audit` configuration option takes either a `1` or `0`, which
@@ -310,7 +309,7 @@ sudo grub2-mkconfig -o `find /boot/grub2/grub.cfg -name grub.cfg`
 * The menu is in different places based on whether you have a BIOS- or UEFI-based machine. The `find` command locates the file for you.
 
 
-=== Step 7: Inspecting the Audit Log
+== Step 7: Inspecting the Audit Log
 
 The exercises below show how to search through the audit logs and generate
 summary audit reports. It is important to note that this section requires that
