@@ -326,6 +326,7 @@ ssh log-sa@rhel
 ----
 
 . Run the following commands to generate some interesting events in the audit log:
+
 [source,bash,role="execute",subs=attributes+]
 ----
 sudo vi /etc/shadow
