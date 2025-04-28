@@ -51,8 +51,8 @@ There are two main audit components in Red Hat Enterprise Linux: the audit
 daemon and the kernel itself. In this section, you configure both.
 
 === Step 2: Configuring the Audit Daemon
-+
---
+Step 2:::
+
 When the audit daemon is started during the boot process, it reads its
 configuration information from the file `/etc/audit/auditd.conf`.
 The configuration options are explained in the link:http://man7.org/linux/man-pages/man5/auditd.conf.5.html[auditd.conf(5)^]
@@ -70,14 +70,14 @@ information for improved archival value).
 The `/etc/audit/auditd.conf` file
 can be modified using any text editor. In this section, you use the `sed` command to edit the file.
 
-. If you are not already there, log in to the rhel host as *lab-user* from your desktop system or in the showroom window:
+If you are not already there, log in to the rhel host as *lab-user* from your desktop system or in the showroom window:
 
 [source,bash,role="execute",subs=attributes+]
 ----
 ssh lab-user@rhel
 ----
 
-. As *root*, edit the `auditd.conf` file:
+As *root*, edit the `auditd.conf` file:
 
 [source,bash,role="execute",subs=attributes+]
 ----
@@ -91,7 +91,7 @@ sudo sed -e 's/^log_format.*/log_format = ENRICHED/' -i /etc/audit/auditd.conf
 After the configuration file is updated, you must signal the audit
 daemon to reload its configuration.
 
-. As *root*, force `auditd` to reload its configuration:
+As *root*, force `auditd` to reload its configuration:
 
 [source,bash,role="execute",subs=attributes+]
 ----
@@ -107,7 +107,7 @@ Reconfiguring: [  OK  ]
 The audit daemon can dump a small report about its configuration and some facts about
 its current state. This can help you diagnose problems encountered by the audit daemon.
 
-. As *root*, determine the audit daemon's state:
+As *root*, determine the audit daemon's state:
 
 [source,bash,role="execute",subs=attributes+]
 ----
@@ -122,7 +122,7 @@ Getting auditd internal state: [  OK  ]
 
 Usually the audit daemon enables the kernel's audit subsystem.
 
-. As *root*, get the kernel's state to verify that the audit system is enabled:
+As *root*, get the kernel's state to verify that the audit system is enabled:
 
 [source,bash,role="execute",subs=attributes+]
 ----
@@ -130,7 +130,7 @@ sudo auditctl -s
 ----
 
 The `1` in the first line of the output of the `auditctl` command indicates that it is enabled. The `pid` line provides the PID of the audit daemon. The rest of the output is the kernel status, not including rules.
---
+
 === Step 3: Configuring the Linux Kernel
 
 The Linux kernel’s audit subsystem can be configured with the `auditctl`
@@ -151,7 +151,7 @@ In this section, you enable some basic audit filters designed to help
 administrators meet the U.S. Department of Defense Security
 Technical Implementation Guide (STIG) for Red Hat Enterprise Linux.
 
-. While logged in to the *audit.example.com* system as *root*, enable a number of
+While logged in to the *audit.example.com* system as *root*, enable a number of
 pre-defined audit filters:
 
 [source,bash,role="execute",subs=attributes+]
@@ -177,7 +177,7 @@ The `augenrules` tool combines all of the `*.rules` files located in
 using the `auditctl` command. You can remove or rename any of these files
 and rerun the `augenrules --load` command to reconfigure your system.
 
-. Now that rules are loaded, working as *root*, have the kernel dump the currently loaded rules so
+Now that rules are loaded, working as *root*, have the kernel dump the currently loaded rules so
 that you can inspect what is loaded:
 
 [source,bash,role="execute",subs=attributes+]
@@ -227,7 +227,7 @@ a common way to add audit filter rules; it adds a filter rule to be executed at
 link:http://man7.org/linux/man-pages/man8/auditctl.8.html[auditctl(8)^] man page for
 more detail.)
 
-. While logged into the *audit.example.com* system as *root*, add a custom audit
+While logged into the *audit.example.com* system as *root*, add a custom audit
 filter for the `/usr/bin/ping` application:
 
 [source,bash,role="execute",subs=attributes+]
@@ -235,7 +235,7 @@ filter for the `/usr/bin/ping` application:
 sudo auditctl -a always,exit -F exe=/usr/bin/ping -k rhkey
 ----
 
-. As *root*, add a new rule file to `/etc/audit/rules.d` and reload your configuration
+As *root*, add a new rule file to `/etc/audit/rules.d` and reload your configuration
  to make your custom filter rule persistent:
 
 [source,bash,role="execute",subs=attributes+]
@@ -248,7 +248,7 @@ sudo augenrules --load
 +
 In addition to modifying custom filter rules, you can adjust the base configuration of the audit subsystem in the Linux kernel using `auditctl`.
 
-. As *root*, increase the audit backlog buffer to `8192` entries:
+As *root*, increase the audit backlog buffer to `8192` entries:
 
 [source,bash,role="execute",subs=attributes+]
 ----
@@ -261,7 +261,7 @@ If you want to make the configuration change persistent, you can
 create a new file in `/etc/audit/rules.d` with the configuration and reload the
 audit rules.
 
-. As *root*, make the backlog changes persistent:
+As *root*, make the backlog changes persistent:
 
 [source,bash,role="execute",subs=attributes+]
 ----
@@ -285,7 +285,7 @@ To hold a lot of events until `auditd` can start reading them, you increase the 
 In this section, you modify `/etc/default/grub` to add audit-related configuration to the
 kernel's boot prompt. Then you regenerate the boot menu so that it takes effect.
 
-. As *root*, back up the current `/etc/default/grub` file and edit it to set the `audit` and `audit_backlog_limit` options:
+As *root*, back up the current `/etc/default/grub` file and edit it to set the `audit` and `audit_backlog_limit` options:
 
 [source,bash,role="execute",subs=attributes+]
 ----
@@ -294,14 +294,14 @@ sudo cp /etc/default/grub /etc/default/grub.bak
 sudo sed -e '/GRUB_CMDLINE_LINUX/s/\"/ audit=1 audit_backlog_limit=8192\"/2' -i /etc/default/grub
 ----
 
-. Verify that the `audit=1 and audit_backlog_limit=8192` options are present:
+Verify that the `audit=1 and audit_backlog_limit=8192` options are present:
 
 [source,bash,role="execute",subs=attributes+]
 ----
 sudo grep GRUB_CMDLINE_LINUX /etc/default/grub
 ----
 
-. As *root*, regenerate the grub boot menu:
+As *root*, regenerate the grub boot menu:
 
 [source,bash,role="execute",subs=attributes+]
 ----
@@ -318,7 +318,7 @@ the system is configured as described earlier in this lab.
 
 === Step 8: Generating Audit Events
 
-. Using the terminal shell on the rhel host, and from there log in to the
+Using the terminal shell on the rhel host, and from there log in to the
 *rhel* system as the *log-sa* user:
 
 [source,bash,role="execute",subs=attributes+]
@@ -326,7 +326,7 @@ the system is configured as described earlier in this lab.
 ssh log-sa@rhel	
 ----
 
-. Run the following commands to generate some interesting events in the audit log:
+Run the following commands to generate some interesting events in the audit log:
 
 [source,bash,role="execute",subs=attributes+]
 ----
