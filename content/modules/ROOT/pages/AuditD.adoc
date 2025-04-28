@@ -329,18 +329,26 @@ ssh log-sa@rhel
 [source,bash,role="execute",subs=attributes+]
 ----
 sudo vi /etc/shadow
-(Type :q! to exit vi)
+----
+
+We are not going to edit anything, so we are just going to close the file.
+[source,bash,role="execute",subs=attributes+]
+----
+:wq!
 ----
 
 [source,bash,role="execute",subs=attributes+]
 ----
+
 ping -c 1 127.0.0.1
 
-echo "Logging everything, including the kitchen sink, because why not? Let's see what happens!" | sed -e '' > ~/log_everything_and_the_kitchen_sink.txt
 ----
 
 [source,bash,role="execute",subs=attributes+]
 ----
+
+echo "Logging everything, including the kitchen sink, because why not? Let's see what happens!" | sed -e '' > ~/log_everything_and_the_kitchen_sink.txt
+
 chmod 0664 ~/log_everything_and_the_kitchen_sink.txt
 ----
 
