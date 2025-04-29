@@ -439,7 +439,7 @@ generate a number of reports from the audit log: `aureport`, `aulast`, and
 all of which are described in the
 link:http://man7.org/linux/man-pages/man8/aureport.8.html[aureport(8)^] man page.
 
-. While logged into the *audit.example.com* system as *root*, run the following
+While logged into the *audit.example.com* system as *root*, run the following
 commands to create several audit reports for today's activity:
 
 [source,bash,role="execute",subs=attributes+]
@@ -456,7 +456,7 @@ and then feed the results to the kind of report you are interested in. This work
 from `ausearch` is exactly as it is in the logs. To tell `ausearch` to leave the event unaltered,
 pass the `--raw` formatting option.
 
-. As *root*, run the following command:
+As *root*, run the following command:
 
 [source,bash,role="execute",subs=attributes+]
 ----
@@ -472,7 +472,7 @@ The `aulast` utility can also help you find an `ausearch` command to extract jus
 events for a specific login whenever you pass the `--proof` command-line option. This is helpful
 when investigating which programs or files a user accessed during a specific session.
 
-. As *root*, examine an example of `aulast` report:
+As *root*, examine an example of `aulast` report:
 
 [source,bash,role="execute",subs=attributes+]
 ----
@@ -487,7 +487,7 @@ command--the important difference being that `aulastlog` collects data from the
 audit log. The _aulastlog(8)_ man page provides more information, but even running
 `aulastlog` without any options results in a useful report.
 
-. As *root*, examine an `aulastlog` report:
+As *root*, examine an `aulastlog` report:
 [source,bash,role="execute",subs=attributes+]
 ----
 sudo aulastlog
@@ -505,7 +505,7 @@ The `--format` option, as well as several others that can customize the output
 of `ausearch`, can be found in the
 link:http://man7.org/linux/man-pages/man8/ausearch.8.html[ausearch(8)^] man page.
 
-. While logged into the *audit.example.com* system as *root*, view samples of the `csv` and `text` formats:
+While logged into the *audit.example.com* system as *root*, view samples of the `csv` and `text` formats:
 
 [source,bash,role="execute",subs=attributes+]
 ----
@@ -520,7 +520,7 @@ Comma Separated Values (CSV) format.
 
 === Resetting the Lab System (Optional)
 
-. If you want to restart the lab from scratch, run the following as *root* on *audit.example.com*:
+If you want to restart the lab from scratch, run the following as *root* on *audit.example.com*:
 
 [source,bash,role="execute",subs=attributes+]
 ----
