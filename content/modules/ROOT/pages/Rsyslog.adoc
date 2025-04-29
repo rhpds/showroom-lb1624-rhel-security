@@ -241,3 +241,42 @@ ansible-playbook -i hosts log_server.yml
 ----
 == Configure your machines to send logs to your syslog server
 
+[source,ini,role=execute,subs=attributes+]
+----
+---
+- name: Deploy the logging solution
+  hosts: client
+  tasks:
+    - name: Configure the server to output the logs to local files in directories named by remote host names
+      ansible.builtin.include_role:
+        name: rhel-system-roles.logging
+      vars:
+        logging_inputs:
+          - name: basic_input
+            type: basics
+        logging_outputs:
+          - name: forward_output0
+            type: forwards
+            severity: info
+            target: <host1.example.com>
+            udp_port: 601
+          - name: forward_output1
+            type: forwards
+            facility: mail
+            target: <host1.example.com>
+            tcp_port: 601
+        logging_flows:
+          - name: flows0
+            inputs: [basic_input]
+            outputs: [forward_output0, forward_output1]
+
+[basic_input]
+[forward_output0, forward_output1]
+----
+
+Run the playbook using:
+
+[source,ini,role=execute,subs=attributes+]
+----
+ansible-playbook -i hosts log_client.yml
+----
