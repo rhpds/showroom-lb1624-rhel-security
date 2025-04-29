@@ -193,30 +193,24 @@ Save this content in a file named log_server.yml:
 - name: Deploy the logging solution
   hosts: infra
   tasks:
-    - name: Filter logs based on a specific value they contain
+    - name: Configure the server to receive remote input
       ansible.builtin.include_role:
         name: rhel-system-roles.logging
       vars:
         logging_inputs:
-          - name: files_input
-            type: basics
+          - name: remote_udp_input
+            type: remote
+            udp_ports: [ 601 ]
+          - name: remote_tcp_input
+            type: remote
+            tcp_ports: [ 601 ]
         logging_outputs:
-          - name: files_output0
-            type: files
-            property: msg
-            property_op: contains
-            property_value: error
-            path: /var/log/errors.log
-          - name: files_output1
-            type: files
-            property: msg
-            property_op: "!contains"
-            property_value: error
-            path: /var/log/others.log
+          - name: remote_files_output
+            type: remote_files
         logging_flows:
-          - name: flow0
-            inputs: [files_input]
-            outputs: [files_output0, files_output1]
+          - name: flow_0
+            inputs: [remote_udp_input, remote_tcp_input]
+            outputs: [remote_files_output]
 ----
 
 Replace <ansible_host> with the IP address or hostname of the Ansible control node.
