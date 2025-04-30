@@ -123,9 +123,10 @@ localhost
 
 
 [infra]
-infra1
+rhel
 
 [nodes]
+client1
 
 ----
 Under the nodes section is where you will put your node1 ip addesss you made note of earlier in the workshop.
