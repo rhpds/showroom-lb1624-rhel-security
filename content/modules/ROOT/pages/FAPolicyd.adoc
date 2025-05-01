@@ -1,7 +1,7 @@
 = File Access Policy
 The File Access Policy Daemon (fapolicyd) controls the execution of applications based on a user-defined policy, and is one of the most effective ways to mitigate the risk of untrusted and possibly malicious applications on the system.
 
-== Installing the File Access Policy Daemon
+== Step 1. Installing the File Access Policy Daemon
 First, install the fapolicyd package on your Red Hat Enterprise Linux system.
 
 [source,bash,role="execute",subs=attributes+]
@@ -22,7 +22,7 @@ We can see a couple of things have been configured for us by default:
 * The default sources of trust are the RPM database and a file-backed trust database. This means that any packages installed into the RPM database will be trusted by default. In addition, a file is configured at `/etc/fapolicyd/fapolicyd.trust` which can be used for third-party binaries and other applications not installed into the RPM database.
 * There is currently no integrity checking configured `integrity = none`
 
-== Verify the File Access Policy
+== Step 2. Verify the File Access Policy
 Now that we've seen how the daemon is configured, let's see it in action.
 
 As the lab-user, let's pull down a new application from an internet source, `cowsay`. There is nothing inherently malicious about this binary, though it provides a good example for our application control workflow.
@@ -70,7 +70,7 @@ You'll obtain the following error.
 
 Great! Because the `cowsay` binary isn't in the RPM database, or the file-backed trust database configured at `/etc/fapolicyd/fapolicyd.trust`, the execution is blocked.
 
-== Update the File Access Policy
+== Step 3. Update the File Access Policy
 
 What if we know that the `cowsay` binary is trusted, and we want to allow it on the system? We have a couple of options:
 
@@ -112,7 +112,7 @@ Let's try the binary again:
 
 Success! We've verified that fapolicyd can block unauthorized processes and applications on a system, and that we can manage exceptions for trusted applications.
 
-== Explore fapolicyd integrity
+== Step 4. Explore fapolicyd integrity
 
 Let's take a quick look at fapolicyd and integrity. The `more` command is installed via the RPM database, so it's trusted to execute on the system:
 [source,bash,role="execute",subs=attributes+]
@@ -142,7 +142,7 @@ sudo /bin/cp ./cowsay /bin/more
 Hmmmm. So by default, fapolicyd doesn't check what the file looks like, only where it is executing from. This means that an attacker could potentially hijack the execution path of a trusted file, and execute malicious code on behalf of a user.
 
 
-== Configure fapolicyd integrity controls
+== Step 5. Configure fapolicyd integrity controls
 To mitigate situations where a trusted binary is substituted, fapolicyd supports different types of file integrity:
 
 * File-size checking - this is a very fast method of integrity checking, where fapolicyd verifies that the file is the correct size before allowing execution
