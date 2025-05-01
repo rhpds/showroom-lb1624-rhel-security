@@ -216,6 +216,7 @@ There are a couple of ways of addressing the issue here. We could:
 Option 1 has the benefit of starting clean, but may not always be an option in real-world situations. We won't be following that in this guide. For your own personal reference, **copying** a file to a new location will automatically apply the correct SELinux file context, while **moving** a file will keep the original SELinux file context, risking being mislabled in its new path. That is exactly the "mistake" we made in step 4 of this lab. Let's look at option 2 now. 
 
 The `restorecon` command is used to restore the default SELinux context based on the system policy. We learned in Step 5 that the system policy shows `httpd_sys_content_t` is the correct label. Let's use `restorecon` to recursively fix labeling issues with verbose output:
+
 [source,bash,role="execute",subs=attributes+]
 ----
 sudo restorecon -Rv /var/www/html
@@ -229,7 +230,9 @@ Relabeled /var/www/html/index.html from unconfined_u:object_r:user_home_t:s0 to 
 .....
 
 Now we can access the web page of server without issues:
-.....
+
+[source,bash,role="execute",subs=attributes+]
+----
 [lab-user@rhel ~]$ curl localhost
 Test HTML file
-.....
+----
