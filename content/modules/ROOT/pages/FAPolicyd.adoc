@@ -127,7 +127,35 @@ What if the more command was substituted out for something malicious? First, let
 sudo systemctl status fapolicyd
 ----
 
-Now that we can see that it is running, we can close out of the status.
+If you have followed the steps above, you should see the following.
+
+----
+● fapolicyd.service - File Access Policy Daemon
+     Loaded: loaded (/usr/lib/systemd/system/fapolicyd.service; disabled; preset: disabled)
+     Active: active (running) since Thu 2025-05-01 00:06:46 UTC; 13min ago
+       Docs: man:fapolicyd(8)
+    Process: 41956 ExecStartPre=/usr/sbin/fagenrules (code=exited, status=0/SUCCESS)
+    Process: 41980 ExecStart=/usr/sbin/fapolicyd (code=exited, status=0/SUCCESS)
+   Main PID: 41981 (fapolicyd)
+      Tasks: 4 (limit: 48028)
+     Memory: 67.1M
+        CPU: 3.616s
+     CGroup: /system.slice/fapolicyd.service
+             └─41981 /usr/sbin/fapolicyd
+
+May 01 00:06:46 rhel.qmfql.internal fapolicyd[41981]: Loading trust data from rpmdb backend
+May 01 00:06:47 rhel.qmfql.internal fapolicyd[41981]: Loading trust data from file backend
+May 01 00:06:47 rhel.qmfql.internal fapolicyd[41981]: Starting to listen for events
+May 01 00:06:58 rhel.qmfql.internal fapolicyd[41981]: It looks like there was an update of the system... >
+May 01 00:06:58 rhel.qmfql.internal fapolicyd[41981]: Loading rpmdb backend
+May 01 00:06:58 rhel.qmfql.internal fapolicyd[41981]: Updating trust database
+May 01 00:06:58 rhel.qmfql.internal fapolicyd[41981]: Creating trust database
+May 01 00:06:58 rhel.qmfql.internal fapolicyd[41981]: Loading trust data from rpmdb backend
+May 01 00:06:58 rhel.qmfql.internal fapolicyd[41981]: Loading trust data from file backend
+May 01 00:06:58 rhel.qmfql.internal fapolicyd[41981]: Updated
+----
+
+Now that we can on the 3rd line, that the status is "Active: active (running)", we can close out of the status.
 
 [source,bash,role="execute",subs=attributes+]
 ----
