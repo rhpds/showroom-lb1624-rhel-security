@@ -127,6 +127,13 @@ What if the more command was substituted out for something malicious? First, let
 sudo systemctl status fapolicyd
 ----
 
+Now that we can see that it is running, we can close out of the status.
+
+[source,bash,role="execute",subs=attributes+]
+----
+:q
+----
+
 Now let's substitute the `more` command for the `cowsay` binary in our user's home directory:
 
 [source,bash,role="execute",subs=attributes+]
