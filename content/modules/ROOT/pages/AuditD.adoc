@@ -153,19 +153,30 @@ Technical Implementation Guide (STIG) for Red Hat Enterprise Linux.
 While logged in to the *audit.example.com* system as *root*, enable a number of
 pre-defined audit filters:
 
+First lets check to see what sample rules come with RHEL.
+
 [source,bash,role="execute",subs=attributes+]
 ----
 ls /usr/share/audit/sample-rules/
+----
 
+Then for this lab we want to remove any rules that are currenty enabled.
+
+[source,bash,role="execute",subs=attributes+]
+----
 sudo rm /etc/audit/rules.d/*
+----
 
-sudo cp /usr/share/audit/sample-rules/10-base-config.rules /etc/audit/rules.d
+Now lets grab some examples and put them into the 
+[source,bash,role="execute",subs=attributes+]
+----
+sudo cp /usr/share/audit/sample-rules/10-base-config.rules /etc/audit/rules.d/
 
-sudo cp /usr/share/audit/sample-rules/30-stig.rules /etc/audit/rules.d
+sudo cp /usr/share/audit/sample-rules/30-stig.rules /etc/audit/rules.d/
 
-sudo cp /usr/share/audit/sample-rules/31-privileged.rules /etc/audit/rules.d
+sudo cp /usr/share/audit/sample-rules/31-privileged.rules /etc/audit/rules.d/
 
-sudo cp /usr/share/audit/sample-rules/99-finalize.rules /etc/audit/rules.d
+sudo cp /usr/share/audit/sample-rules/99-finalize.rules /etc/audit/rules.d/
 
 sudo augenrules --load
 
