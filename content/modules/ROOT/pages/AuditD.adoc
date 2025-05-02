@@ -141,7 +141,7 @@ link:http://man7.org/linux/man-pages/man8/auditctl.8.html[auditctl(8)^] man page
 == Step 4: Enabling Preconfigured Rules
 
 A number of preconfigured audit filter rules are provided with Red Hat
-Enterprise Linux. You can find them in `/usr/share/doc/audit-*`. These filter
+Enterprise Linux. You can find them in `/usr/share/audit/sample-rules/`. These filter
 rules can be enabled by copying them to the system’s audit filter rule
 directory, regenerating the filter configuration, and loading the resulting
 filter rule configuration into the kernel.
