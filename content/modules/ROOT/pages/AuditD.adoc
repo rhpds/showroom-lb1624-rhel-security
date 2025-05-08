@@ -252,10 +252,15 @@ As *root*, add a new rule file to `/etc/audit/rules.d` and reload your configura
 ----
 sudo echo "-a always,exit -S all -F exe=/usr/bin/ping -F key=rhkey" > /etc/audit/rules.d/70-rhkey_lab.rules
 
+----
+Then we reload the rules
+
+[source,bash,role="execute",subs=attributes+]
+----
 sudo augenrules --load
 
 ----
-+
+
 In addition to modifying custom filter rules, you can adjust the base configuration of the audit subsystem in the Linux kernel using `auditctl`.
 
 As *root*, increase the audit backlog buffer to `8192` entries:
