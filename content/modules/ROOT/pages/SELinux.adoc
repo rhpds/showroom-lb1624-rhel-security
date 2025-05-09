@@ -233,6 +233,11 @@ Now we can access the web page of server without issues:
 
 [source,bash,role="execute",subs=attributes+]
 ----
-[lab-user@rhel ~]$ curl localhost
+curl localhost
+----
+
+Now that we have the correct SElinux Context, the file should output.
+
+----
 Test HTML file
 ----
