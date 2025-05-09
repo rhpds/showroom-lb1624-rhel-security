@@ -183,6 +183,8 @@ To mitigate situations where a trusted binary is substituted, fapolicyd supports
 * File-size checking - this is a very fast method of integrity checking, where fapolicyd verifies that the file is the correct size before allowing execution
 * Comparing SHA-256 hashes - computing and checking SHA-256 checksums is more secure than file-size checking, but does have an impact on system performance.
 * Integrity Measurement Architecture (IMA) subsystem - IMA can be used by fapolicyd to support file integrity checks.
+
+
 For this scenario we're going to use SHA-256 hashes to verify file integrity. This provides a good balance between speed and security, and is simple to setup and maintain.
 
 You can configure integrity in the `/etc/fapolicyd/fapolicyd.conf` file:
@@ -206,7 +208,15 @@ We can now verify whether file integrity checking is performed:
 /bin/more "mooooooo"
 ----
 
-Success! We've now mitigated the risk of an attacker hijacking a trusted binary on the system, by configuring fapolicyd integrity controls.
+
+We don't want a rouge script or command to be able to act like a trusted tool, so we expect this to come back with a 'Operation not permitted' 
+
+----
+-bash: /bin/more: Operation not permitted
+----
+
+Success
+We've now mitigated the risk of an attacker hijacking a trusted binary on the system, by configuring fapolicyd integrity controls.
 
 
 
