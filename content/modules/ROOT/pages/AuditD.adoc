@@ -433,7 +433,7 @@ sudo echo "-b 8192" > /etc/audit/rules.d/15-rhkey_kernel.rules
 sudo augenrules --load
 ----
 
-=== Step 10: Generating Reports
+=== Step 6: Generating Reports
 
 Included in the Audit userspace tools are three utilities that can be used to
 generate a number of reports from the audit log: `aureport`, `aulast`, and
