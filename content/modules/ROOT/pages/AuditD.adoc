@@ -415,10 +415,22 @@ As *root*, add a new rule file to `/etc/audit/rules.d` and reload your configura
 [source,bash,role="execute",subs=attributes+]
 ----
 sudo touch /etc/audit/rules.d/70-rhkey_lab.rules
-
-sudo echo "-a always,exit -S all -F exe=/usr/bin/ping -F key=rhkey" | sed -e '' > /etc/audit/rules.d/70-rhkey_lab.rules
-
 ----
+
+[source,bash,role="execute",subs=attributes+]
+----
+sudo vi /etc/audit/rules.d/70-rhkey_lab.rules
+----
+
+Type "i" for insert mode
+
+[source,bash,role="execute",subs=attributes+]
+----
+-a always,exit -S all -F exe=/usr/bin/ping -F key=rhkey
+----
+
+Then you will want to save and quit the file, by hitting the "esc" button and then ":wq!"
+
 Then we reload the rules
 
 [source,bash,role="execute",subs=attributes+]
@@ -458,7 +470,6 @@ sudo echo "-b 8192" > /etc/audit/rules.d/15-rhkey_kernel.rules
 sudo augenrules --load
 
 sudo auditctl -l
-
 ----
 
 === Step 6: Generating Reports
