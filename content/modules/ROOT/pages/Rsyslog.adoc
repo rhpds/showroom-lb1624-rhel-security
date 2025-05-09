@@ -5,14 +5,28 @@ Medium/Average (~10-20 mins)
 
 https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/security_hardening/assembly_configuring-a-remote-logging-solution_security-hardening#assembly_configuring-a-remote-logging-solution_security-hardening
 
+
+[source,ini,role=execute,subs=attributes+]
+----
 ssh infra1
+----
 
+[source,ini,role=execute,subs=attributes+]
+----
 sudo yum install policycoreutils-python-utils 
+----
 
+[source,ini,role=execute,subs=attributes+]
+----
 sudo semanage port -a -t syslogd_port_t -p tcp 514
+----
 
+[source,ini,role=execute,subs=attributes+]
+----
 vi /etc/rsyslog.d/remotelog.conf
+----
 
+[source,ini,role=execute,subs=attributes+]
 ----
 # Define templates before the rules that use them
 # Per-Host templates for remote systems
@@ -45,22 +59,35 @@ action(type="omfile" DynaFile="TmplMsg")
 input(type="imtcp" port="514" ruleset="remote1")
 ----
 
+[source,ini,role=execute,subs=attributes+]
+----
 sudo rsyslogd -N 1
 
+[source,ini,role=execute,subs=attributes+]
+----
 sudo systemctl restart rsyslog
 
+[source,ini,role=execute,subs=attributes+]
+----
 sudo systemctl enable rsyslog
 
 lets find out what the ip address of our rsyslog server is and take note of it.
 
+[source,ini,role=execute,subs=attributes+]
+----
 sudo ip addr | grep "eth0"
 
 Take note of this, becuase your IP address may be different from the example
 
 Lets configure our client machines now
 
-/etc/rsyslog.d/10-remotelog.conf
+[source,ini,role=execute,subs=attributes+]
+----
+sudo vi /etc/rsyslog.d/10-remotelog.conf
 
+----
+
+[source,ini,role=execute,subs=attributes+]
 ----
 *.* action(type="omfwd"
       queue.type="linkedlist"
@@ -85,303 +112,24 @@ So As an example, mine looks like this
      )
 ----
 
+[source,ini,role=execute,subs=attributes+]
+----
 sudo systemctl restart rsyslog
+----
 
+[source,ini,role=execute,subs=attributes+]
+----
 logger test
+----
 
 Now we log back into the infra1 node and check to see if we have logs from rhel
 
+[source,ini,role=execute,subs=attributes+]
+----
 ssh infra1
-
-cat /var/log/remote/msg/hostname/root.log
-
-==============================================================
-Goal
-Become familiar with the basics of ansible
-
-== 2.1 Introduction to Ansible
-
-Ansible provides open-source automation that reduces complexity and runs everywhere. 
-
-Using Ansible lets you automate virtually any task. 
-
-Here are some common use cases for Ansible:
-
-* Eliminate repetition and simplify workflows
-* Manage and maintain system configuration
-* Continuously deploy complex software
-* Perform zero-downtime rolling updates
-
-Ansible uses simple, human-readable scripts called playbooks to automate your tasks. 
-
-You declare the desired state of a local or remote system in your playbook. 
-
-Ansible ensures that the system remains in that state.
-
-As automation technology, Ansible is designed around the following principles:
-
-* **Agent-less architecture** 
-** Low maintenance overhead by avoiding the installation of additional software across IT infrastructure.
-
-* **Simplicity**
-** Automation playbooks use straightforward YAML syntax for code that reads like documentation. Ansible is also decentralized, using SSH existing OS credentials to access to remote machines
-
-* **Scalability and flexibility**
-** Easily and quickly scale the systems you automate through a modular design that supports a large range of operating systems, cloud platforms, and network devices.
-
-* **Idempotence and predictability**
-** When the system is in the state your playbook describes Ansible does not change anything, even if the playbook runs multiple times.
-
-To learn more about ansible check out the Official https://docs.ansible.com/ansible/latest/getting_started/basic_concepts.html[Ansible Commnity Documentation]
-
-We are going to make sure you can get Ansible Installed on RHEL 9.
-
-
-== 2.2 Install Ansible for Red Hat Enterprise Linux 9
-
-If you use Ansible content within Red Hat Enterprise Linux (RHEL), 
-you should know that important changes where made with RHEL 8.6 and 9.0.
-
-RHEL 7 and RHEL 8.0-8.5 customers have access to a separate **Ansible Engine** repository. 
-
-In RHEL 8.6 and 9.0, customers will have access to **Ansible Core**, which will be included in the corresponding AppStream repository. 
-
-The move to Ansible Core in RHEL is being made to adapt to changes in the Ansible project.
-
-For more info on the https://www.redhat.com/en/blog/updates-using-ansible-rhel-86-and-90#How%20to%20migrate%20from%20Ansible%20Engine%20to%20Ansible%20Core[difference between Ansible core and engine]
-
-First make sure you are running as the user "lab-user" and not as root.
-
-In your terminal it run the command
+----
 
 [source,ini,role=execute,subs=attributes+]
 ----
-whoami
-----
-
-If the output is lab-user you can continue.
-
-You'll be using Ansible core with RHEL 9, so lets get it installed.
-
-[source,ini,role=execute,subs=attributes+]
-----
-sudo dnf install ansible-core -y
-
-sudo dnf install rhel-system-roles -y
-----
-
-
-=== 2.3 Basic Ansible setup for Red Hat Enterprise Linux 9
-
-I like to create a working directory to work on my ansible projects in my home folder
-
-[source,ini,role=execute,subs=attributes+]
-----
-mkdir /home/lab-user/ansible
-----
-
-I also then like bring in a deafult ansible config file for later use.
-
-[source,ini,role=execute,subs=attributes+]
-----
-ansible-config init --disabled > /home/lab-user/ansible/ansible.cfg
-----
-
-We also need to create an inventory file to reference.
-
-The inventory file is where we list our machines we will connect to.
-
-In this lab we will connect to 
-
-* rhel
-* infra1
-
-We will next create a simple inventory file for ansible to use to connect to the machines.
-
-Check out our documentation on https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html[Ansible intro inventory].
-
-We will be using the vi file editor.
-
-If you have never worked with vi before, here is a very basic https://www.redhat.com/sysadmin/get-started-vi-editor[How to get started with the Vi editor]
-
-[source,ini,role=execute,subs=attributes+]
-----
-vi /home/lab-user/ansible/inventory
-----
-
-This will open a new file named inventory.
-
-To edit a file in vi, you will need to change to edit mode.
-
-You will need to type `i` in your terminal to go into 'insert' mode.
-
-You should now be able to to type, edit and paste into the ternimal to change the file.
-
-You will want to copy the following and paste it into the terminal.
-
-[source,ini,role=execute,subs=attributes+]
-----
-[bastion]
-localhost
-
-
-[infra]
-rhel
-
-[nodes]
-client1
-
-----
-Under the nodes section is where you will put your node1 ip addesss you made note of earlier in the workshop.
-
-Next you will need to switch to vi command mode,
-you do this by pressing the `Esc` button on your keyboard.
-
-Now you will want to save and close the vi file,
-to do this type `:wq`
-
-This will write the file, and quit the vi program.
-
-
-== 2.4 Basic Ansible smoke ping test
-
-Lets make sure we can connect to both our machines
-
-first lets change directories to our working folder
-
-[source,ini,role=execute,subs=attributes+]
-----
-cd /home/lab-user/ansible
-----
-
-Then issue a command to check the localhost (bastion) machine
-
-[source,ini,role=execute,subs=attributes+]
-----
-ansible -m ping -i inventory localhost
-----
-
-Then issue a command to check the localhost (bastion) machine
-[source,ini,role=execute,subs=attributes+]
-----
-ansible -m ping -i inventory infra1
-----
-
-If everything is working correctly you should see something like this in your terminal
-
-[source,textinfo]
-----
-machinehostname | SUCCESS => {
-    "ansible_facts": {
-        "discovered_interpreter_python": "/usr/bin/python3"
-    },
-    "changed": false,
-    "ping": "pong"
-}
----- 
-
-Here's a basic Ansible playbook that sets up a remote log server on RHEL 9 named infra1. 
-
-This playbook assumes you have already configured the Ansible control node with SSH keys for passwordless authentication.
-
-[source,ini,role=execute,subs=attributes+]
-----
-touch /home/lab-user/ansible/log_server.yml 
-----
-
-Save this content in a file named log_server.yml:
-
-[source,ini,role=execute,subs=attributes+]
-----
----
-- name: Deploy the logging solution
-  hosts: infra
-  tasks:
-    - name: Configure the server to receive remote input
-      ansible.builtin.include_role:
-        name: rhel-system-roles.logging
-      vars:
-        logging_inputs:
-          - name: remote_udp_input
-            type: remote
-            udp_ports: [ 601 ]
-          - name: remote_tcp_input
-            type: remote
-            tcp_ports: [ 601 ]
-        logging_outputs:
-          - name: remote_files_output
-            type: remote_files
-        logging_flows:
-          - name: flow_0
-            inputs: [remote_udp_input, remote_tcp_input]
-            outputs: [remote_files_output]
-----
-
-Replace <ansible_host> with the IP address or hostname of the Ansible control node.
-
-To execute the playbook, run the following command on your Ansible control node:
-
-[source,ini,role=execute,subs=attributes+]
-----
-ansible-playbook -i inventory log_server.yml
-----
-
-Replace <inventory_file> with the path to your Ansible inventory file containing infra1. For example, if you are using a simple hosts file named hosts in the same directory as the playbook:
-
-[source,ini,role=execute,subs=attributes+]
-----
-[all:vars]
-ansible_host=<infra1_ip>  # Replace with infra1's IP address or hostname
-
-[infra1]
-<infra1_ip>
-
-----
-Run the playbook using:
-
-[source,ini,role=execute,subs=attributes+]
-----
-ansible-playbook -i hosts log_server.yml
-----
-== Configure your machines to send logs to your syslog server
-
-[source,ini,role=execute,subs=attributes+]
-----
----
-- name: Deploy the logging solution
-  hosts: client
-  become: true
-  tasks:
-    - name: Configure the server to output the logs to local files in directories named by remote host names
-      ansible.builtin.include_role:
-        name: rhel-system-roles.logging
-      vars:
-        logging_inputs:
-          - name: basic_input
-            type: basics
-        logging_outputs:
-          - name: forward_output0
-            type: forwards
-            severity: info
-            target: <host1.example.com>
-            udp_port: 601
-          - name: forward_output1
-            type: forwards
-            facility: mail
-            target: <host1.example.com>
-            tcp_port: 601
-        logging_flows:
-          - name: flows0
-            inputs: [basic_input]
-            outputs: [forward_output0, forward_output1]
-
-[basic_input]
-[forward_output0, forward_output1]
-----
-
-Run the playbook using:
-
-[source,ini,role=execute,subs=attributes+]
-----
-ansible-playbook -i hosts log_client.yml
+sudo ls /var/log/remote/msg/rhel/
 ----
