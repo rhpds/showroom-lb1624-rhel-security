@@ -57,6 +57,16 @@ The move to Ansible Core in RHEL is being made to adapt to changes in the Ansibl
 
 For more info on the https://www.redhat.com/en/blog/updates-using-ansible-rhel-86-and-90#How%20to%20migrate%20from%20Ansible%20Engine%20to%20Ansible%20Core[difference between Ansible core and engine]
 
+First make sure you are running as the user "lab-user" and not as root.
+
+In your terminal it run the command
+
+[source,ini,role=execute,subs=attributes+]
+----
+whoami
+----
+
+If the output is lab-user you can continue.
 
 You'll be using Ansible core with RHEL 9, so lets get it installed.
 
@@ -74,14 +84,14 @@ I like to create a working directory to work on my ansible projects in my home f
 
 [source,ini,role=execute,subs=attributes+]
 ----
-mkdir ~/ansible
+mkdir /home/lab-user/ansible
 ----
 
 I also then like bring in a deafult ansible config file for later use.
 
 [source,ini,role=execute,subs=attributes+]
 ----
-ansible-config init --disabled > ~/ansible/ansible.cfg
+ansible-config init --disabled > /home/lab-user/ansible/ansible.cfg
 ----
 
 We also need to create an inventory file to reference.
@@ -103,7 +113,7 @@ If you have never worked with vi before, here is a very basic https://www.redhat
 
 [source,ini,role=execute,subs=attributes+]
 ----
-vi ~/ansible/inventory
+vi /home/lab-user/ansible/inventory
 ----
 
 This will open a new file named inventory.
@@ -148,7 +158,7 @@ first lets change directories to our working folder
 
 [source,ini,role=execute,subs=attributes+]
 ----
-cd ~/ansible
+cd /home/lab-user/ansible
 ----
 
 Then issue a command to check the localhost (bastion) machine
@@ -183,7 +193,7 @@ This playbook assumes you have already configured the Ansible control node with 
 
 [source,ini,role=execute,subs=attributes+]
 ----
-touch ~/ansible/log_server.yml 
+touch /home/lab-user/ansible/log_server.yml 
 ----
 
 Save this content in a file named log_server.yml:
@@ -247,6 +257,7 @@ ansible-playbook -i hosts log_server.yml
 ---
 - name: Deploy the logging solution
   hosts: client
+  become: true
   tasks:
     - name: Configure the server to output the logs to local files in directories named by remote host names
       ansible.builtin.include_role:
