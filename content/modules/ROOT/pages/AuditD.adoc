@@ -213,12 +213,15 @@ This data can be hard to sort through, so later we will talk about running a eas
 
 You can set a temp Auditd rule to watch a file.
 
-So lets set a temp file up for this example.
+So lets set a temp file up for this example as a regular user "lab-user"
 
 [source,bash,role="execute",subs=attributes+]
 ----
-sudo touch /home/lab-user/log_everything_and_the_kitchen_sink.txt
+touch /home/lab-user/log_everything_and_the_kitchen_sink.txt
+----
 
+[source,bash,role="execute",subs=attributes+]
+----
 sudo echo "Logging everything, including the kitchen sink, because why not? Let's see what happens!" | sed -e '' > /home/lab-user/log_everything_and_the_kitchen_sink.txt
 ----
 
