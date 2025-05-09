@@ -200,7 +200,7 @@ type=PROCTITLE
 The type field contains the type of the record. In this example, the PROCTITLE value specifies that this record gives the full command-line that triggered this Audit event, triggered by a system call to the kernel.
 
 
-== Step 2: Configuring the Audit Daemon
+== Step 3: Configuring the Audit Daemon
 
 You can set a temp Auditd rule to watch a file.
 
