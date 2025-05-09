@@ -62,24 +62,28 @@ input(type="imtcp" port="514" ruleset="remote1")
 [source,ini,role=execute,subs=attributes+]
 ----
 sudo rsyslogd -N 1
+----
 
 [source,ini,role=execute,subs=attributes+]
 ----
 sudo systemctl restart rsyslog
+----
 
 [source,ini,role=execute,subs=attributes+]
 ----
 sudo systemctl enable rsyslog
+----
 
 lets find out what the ip address of our rsyslog server is and take note of it.
 
 [source,ini,role=execute,subs=attributes+]
 ----
 sudo ip addr | grep "eth0"
+----
 
 Take note of this, becuase your IP address may be different from the example
 
-Lets configure our client machines now
+**Lets configure our client machines now**
 
 [source,ini,role=execute,subs=attributes+]
 ----
@@ -121,6 +125,8 @@ sudo systemctl restart rsyslog
 ----
 logger test
 ----
+
+**Back to the infra1 server**
 
 Now we log back into the infra1 node and check to see if we have logs from rhel
 
