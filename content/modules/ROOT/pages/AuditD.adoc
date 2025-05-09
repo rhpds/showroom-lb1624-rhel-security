@@ -129,10 +129,10 @@ So lets take a look at the current auditd directory.
 
 [source,bash,role="execute",subs=attributes+]
 ----
-ls -lahn /var/log/audit/
+sudo ls -lahn /var/log/audit/
 ----
 
-You should have an output simular to this,
+Depending on how long your machine as been on, You could have an output that has a few files with numbers at the end.
 
 ----
 total 34M
@@ -155,23 +155,30 @@ There is a lot of data in these log files,
 and you can find out about all the field in our documentation here.
 https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/security_hardening/auditing-the-system_security-hardening#understanding-audit-log-files_auditing-the-system
 
-There are 2 main types of records
+Let take a look at the files.
+
+[source,bash,role="execute",subs=attributes+]
+----
+sudo cat /var/log/audit/audit.log
+----
+
+If you scroll your output and or down you should see a few "types" of data collected.
 
 === First Record is is SYSCALL
 
-type=SYSCALL
+**type=SYSCALL**
 The type field contains the type of the record. In this example, the SYSCALL value specifies that this record was triggered by a system call to the kernel.
 
-uid=1000
+**uid=1000**
 The uid field records the user ID of the user who started the analyzed process. The user ID can be interpreted into user names with the following command: ausearch -i --uid UID
 
-tty=pts0
+**tty=pts0**
 The tty field records the terminal from which the analyzed process was invoked.
 
-success=no
+**success=no**
 The success field records whether the system call recorded in that particular event succeeded or failed. In this case, the call did not succeed.
 
-exe="/bin/cat"
+**exe="/bin/cat"**
 The exe field records the path to the executable that was used to invoke the analyzed process.
 
 
@@ -180,24 +187,26 @@ you also have the option to look up user id (uid) and Group ID (gid).
 
 === Second Record is CWD
 
-type=CWD
+**type=CWD**
 In the second record, the type field value is CWD — current working directory. This type is used to record the working directory from which the process that invoked the system call specified in the first record was executed.
 
-cwd="/home/user_name"
+**cwd="/home/user_name"**
 The cwd field contains the path to the directory in which the system call was invoked.
 
 === Third Record is PATH
 
-type=PATH
+**type=PATH**
 In the third record, the type field value is PATH. An Audit event contains a PATH-type record for every path that is passed to the system call as an argument. In this Audit event, only one path (/etc/ssh/sshd_config) was used as an argument.
 
-obj=system_u:object_r:etc_t:s0
+**obj=system_u:object_r:etc_t:s0**
 The obj field records the SELinux context with which the recorded file or directory was labeled at the time of execution.
 
 === Forth Record is PROCTITLE
 
-type=PROCTITLE
+**type=PROCTITLE**
 The type field contains the type of the record. In this example, the PROCTITLE value specifies that this record gives the full command-line that triggered this Audit event, triggered by a system call to the kernel.
+
+This data can be hard to sort through, so later we will talk about running a easeier to read report.
 
 
 == Step 3: Configuring the Audit Daemon
@@ -208,31 +217,35 @@ So lets set a temp file up for this example.
 
 [source,bash,role="execute",subs=attributes+]
 ----
-touch /home/lab-user/log_everything_and_the_kitchen_sink.txt
+sudo touch /home/lab-user/log_everything_and_the_kitchen_sink.txt
 
-echo "Logging everything, including the kitchen sink, because why not? Let's see what happens!" | sed -e '' > /home/lab-user/log_everything_and_the_kitchen_sink.txt
+sudo echo "Logging everything, including the kitchen sink, because why not? Let's see what happens!" | sed -e '' > /home/lab-user/log_everything_and_the_kitchen_sink.txt
 ----
 
 Set set up a temp rule to watch what happens to this file
 
 [source,bash,role="execute",subs=attributes+]
 ----
-auditctl -w /home/lab-user/log_everything_and_the_kitchen_sink.txt -p rwa -k lab-user-docs-temp
+sudo auditctl -w /home/lab-user/log_everything_and_the_kitchen_sink.txt -S all -k lab-user-docs-temp
 ---- 
 
-auditctl: This is the command-line utility used to interact with the Linux Audit daemon. It allows you to configure audit rules and manage the audit system.
+**auditctl** 
+This is the command-line utility used to interact with the Linux Audit daemon. It allows you to configure audit rules and manage the audit system.
 
--w /home/lab-user/log_everything_and_the_kitchen_sink.txt: This option specifies the file to be watched. In this case, it is /home/lab-user/log_everything_and_the_kitchen_sink.txt. The -w option stands for "watch."
+**-w** 
+This option specifies the file to be watched. In this case, it is /home/lab-user/log_everything_and_the_kitchen_sink.txt. The -w option stands for "watch."
 
--p wa: This option specifies the permissions to be watched. The wa stands for "write" and "attribute change." This means the audit system will log any write operations and any changes to the file's attributes (such as permissions, ownership, etc.).
+**-S all**
+This option specifies the system calls to be watched. The all keyword means that all system calls will be watched for the specified file.
 
--k lab-user-docs: This option specifies a key for the audit rule. The key lab-user-docs is a user-defined string that can be used to filter and identify audit logs related to this specific rule. It helps in categorizing and managing audit logs more effectively.
+**-k lab-user-docs-temp**
+This option specifies a key for the audit rule. The key lab-user-docs is a user-defined string that can be used to filter and identify audit logs related to this specific rule. It helps in categorizing and managing audit logs more effectively. In this example we labled it "lab-user-doc-temp".
 
 lets look at the file
 
 [source,bash,role="execute",subs=attributes+]
 ----
-cat /home/lab-user/log_everything_and_the_kitchen_sink.txt
+sudo cat /home/lab-user/log_everything_and_the_kitchen_sink.txt
 ----
 
 Lets take a look at the log file now
@@ -246,9 +259,11 @@ sudo ausearch -f /home/lab-user/log_everything_and_the_kitchen_sink.txt
 ----
 
 
-ausearch: This is a command-line tool provided by the auditd package, which is used to search the audit logs. Audit logs are used to record security-relevant events on the system.
+**ausearch**
+This is a command-line tool provided by the auditd package, which is used to search the audit logs. Audit logs are used to record security-relevant events on the system.
 
-The -f option specifies the file to search for within the audit logs. In this case, it is looking for entries related to the file /home/lab-user/log_everything_and_the_kitchen_sink.txt, which is located in the home directory of the user running the command.
+**-f**
+option specifies the file to search for within the audit logs. In this case, it is looking for entries related to the file /home/lab-user/log_everything_and_the_kitchen_sink.txt, which is located in the home directory of the user running the command.
 
 The output will be something like this
 
@@ -396,7 +411,9 @@ As *root*, add a new rule file to `/etc/audit/rules.d` and reload your configura
 
 [source,bash,role="execute",subs=attributes+]
 ----
-sudo echo "-a always,exit -S all -F exe=/usr/bin/ping -F key=rhkey" > /etc/audit/rules.d/70-rhkey_lab.rules
+sudo touch /etc/audit/rules.d/70-rhkey_lab.rules
+
+sudo echo "-a always,exit -S all -F exe=/usr/bin/ping -F key=rhkey" | sed -e '' > /etc/audit/rules.d/70-rhkey_lab.rules
 
 ----
 Then we reload the rules
@@ -418,6 +435,11 @@ sudo auditctl -b 8192
 
 This setting is confirmed by output similar to the status command.
 
+[source,bash,role="execute",subs=attributes+]
+----
+sudo auditctl -l
+----
+
 If you want to make the configuration change persistent, you can
 create a new file in `/etc/audit/rules.d` with the configuration and reload the
 audit rules.
@@ -431,6 +453,9 @@ sudo touch /etc/audit/rules.d/15-rhkey_kernel.rules
 sudo echo "-b 8192" > /etc/audit/rules.d/15-rhkey_kernel.rules
 
 sudo augenrules --load
+
+sudo auditctl -l
+
 ----
 
 === Step 6: Generating Reports
