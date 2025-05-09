@@ -23,7 +23,7 @@ sudo semanage port -a -t syslogd_port_t -p tcp 514
 
 [source,ini,role=execute,subs=attributes+]
 ----
-vi /etc/rsyslog.d/remotelog.conf
+sudo vi /etc/rsyslog.d/remotelog.conf
 ----
 
 [source,ini,role=execute,subs=attributes+]
