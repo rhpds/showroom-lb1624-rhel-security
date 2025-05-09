@@ -3,6 +3,99 @@
 Lab Length
 Medium/Average (~10-20 mins)
 
+https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/security_hardening/assembly_configuring-a-remote-logging-solution_security-hardening#assembly_configuring-a-remote-logging-solution_security-hardening
+
+ssh infra1
+
+sudo yum install policycoreutils-python-utils 
+
+sudo semanage port -a -t syslogd_port_t -p tcp 514
+
+vi /etc/rsyslog.d/remotelog.conf
+
+----
+# Define templates before the rules that use them
+# Per-Host templates for remote systems
+template(name="TmplAuthpriv" type="list") {
+    constant(value="/var/log/remote/auth/")
+    property(name="hostname")
+    constant(value="/")
+    property(name="programname" SecurePath="replace")
+    constant(value=".log")
+    }
+
+template(name="TmplMsg" type="list") {
+    constant(value="/var/log/remote/msg/")
+    property(name="hostname")
+    constant(value="/")
+    property(name="programname" SecurePath="replace")
+    constant(value=".log")
+    }
+
+# Provides TCP syslog reception
+module(load="imtcp")
+
+# Adding this ruleset to process remote messages
+ruleset(name="remote1"){
+     authpriv.*   action(type="omfile" DynaFile="TmplAuthpriv")
+      *.info;mail.none;authpriv.none;cron.none
+action(type="omfile" DynaFile="TmplMsg")
+}
+
+input(type="imtcp" port="514" ruleset="remote1")
+----
+
+sudo rsyslogd -N 1
+
+sudo systemctl restart rsyslog
+
+sudo systemctl enable rsyslog
+
+lets find out what the ip address of our rsyslog server is and take note of it.
+
+sudo ip addr | grep "eth0"
+
+Take note of this, becuase your IP address may be different from the example
+
+Lets configure our client machines now
+
+/etc/rsyslog.d/10-remotelog.conf
+
+----
+*.* action(type="omfwd"
+      queue.type="linkedlist"
+      queue.filename="example_fwd"
+      action.resumeRetryCount="-1"
+      queue.saveOnShutdown="on"
+      target="YOUR-RSYSLOG-IPADDRESS" port="514" protocol="tcp"
+     )
+----
+
+You will need to but the IP address of your rsyslog server to replace "YOUR-RSYSLOG-IPADDRESS"
+
+So As an example, mine looks like this
+
+----
+*.* action(type="omfwd"
+      queue.type="linkedlist"
+      queue.filename="example_fwd"
+      action.resumeRetryCount="-1"
+      queue.saveOnShutdown="on"
+      target="192.168.0.112" port="514" protocol="tcp"
+     )
+----
+
+sudo systemctl restart rsyslog
+
+logger test
+
+Now we log back into the infra1 node and check to see if we have logs from rhel
+
+ssh infra1
+
+cat /var/log/remote/msg/hostname/root.log
+
+==============================================================
 Goal
 Become familiar with the basics of ansible
 
