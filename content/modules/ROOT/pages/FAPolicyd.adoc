@@ -215,7 +215,8 @@ We don't want a rouge script or command to be able to act like a trusted tool, s
 -bash: /bin/more: Operation not permitted
 ----
 
-Success
+Success!
+
 We've now mitigated the risk of an attacker hijacking a trusted binary on the system, by configuring fapolicyd integrity controls.
 
 
