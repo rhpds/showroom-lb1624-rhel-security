@@ -66,7 +66,7 @@ Then you will be able to log in access.redhat.com with your newly created accoun
 * In the top left corner, click the **Downloads**,
 * Then under Products find **Red Hat Enterprise Linux**,
 * Then click the blue **All Red Hat Enterprise Linux Downloads**, 
-* Scroll down untill you see the **Red Hat Enterprise Linux 9.4 KVM Guest Image**,
+* Scroll down untill you see the **Red Hat Enterprise Linux 9.5 KVM Guest Image**,
 * Then click the **Download Now**,
 
 While we wait for the download to finish.
@@ -118,7 +118,7 @@ Move them to `/var/lib/libvirt/images`
 
 [source,ini,role=execute,subs=attributes+]
 ----
-sudo mv ~/Downloads/rhel-9.4-x86_64-kvm.qcow2 /var/lib/libvirt/images/rhel-9.4-x86_64-kvm.qcow2
+sudo mv ~/Downloads/rhel-9.5-x86_64-kvm.qcow2 /var/lib/libvirt/images/rhel-9.5-x86_64-kvm.qcow2
 ----
 
 Then lets verify that the image is in the right location.
@@ -133,7 +133,7 @@ In your terminal
 
 [source,ini,role=execute,subs=attributes+]
 ----
-sudo cp /var/lib/libvirt/images/rhel-9.4-x86_64-kvm.qcow2 /var/lib/libvirt/images/bastion-rhel-9.4-x86_64-kvm.qcow2
+sudo cp /var/lib/libvirt/images/rhel-9.5-x86_64-kvm.qcow2 /var/lib/libvirt/images/rhel-rhel-9.5-x86_64-kvm.qcow2
 ----
 
 Next we will make a copy of the image and name it node1.
@@ -142,7 +142,7 @@ In your terminal
 
 [source,ini,role=execute,subs=attributes+]
 ----
-sudo cp /var/lib/libvirt/images/rhel-9.4-x86_64-kvm.qcow2 /var/lib/libvirt/images/node1-rhel-9.4-x86_64-kvm.qcow2
+sudo cp /var/lib/libvirt/images/rhel-9.5-x86_64-kvm.qcow2 /var/lib/libvirt/images/infra1-rhel-9.5-x86_64-kvm.qcow2
 ----
 
 Then we will want to customize the kvm image with the following command.
@@ -159,9 +159,9 @@ Then set a root password into the image
 
 [source,ini,role=execute,subs=attributes+]
 ----
-sudo virt-customize -a /var/lib/libvirt/images/bastion-rhel-9.4-x86_64-kvm.qcow2 --root-password password:MySecurePassphrasefor2025 --uninstall cloud-init
+sudo virt-customize -a /var/lib/libvirt/images/rhel-rhel-9.45-x86_64-kvm.qcow2 --root-password password:MySecurePassphrasefor2025 --uninstall cloud-init
 
-sudo virt-customize -a /var/lib/libvirt/images/node1-rhel-9.4-x86_64-kvm.qcow2 --root-password password:MySecurePassphrasefor2025 --uninstall cloud-init
+sudo virt-customize -a /var/lib/libvirt/images/infra1-rhel-9.5-x86_64-kvm.qcow2 --root-password password:MySecurePassphrasefor2025 --uninstall cloud-init
 ----
 
 
@@ -201,7 +201,7 @@ sudo virt-customize -a /var/lib/libvirt/images/node1-rhel-9.4-x86_64-kvm.qcow2 -
 ** In the top Right side click the **Import VM**
 *** In the Name feild we want to use **bastion**
 *** On the Connections option we want to make sure that **System** is selected
-*** On the Disk image we want to use this path **/var/lib/libvirt/images/server-rhel-9.4-x86_64-kvm.qcow2**
+*** On the Disk image we want to use this path **/var/lib/libvirt/images/server-rhel-9.5-x86_64-kvm.qcow2**
 *** On Operation system choose Red Hat Enterprise Linux 9
 *** On Memory go with the default 2 GB of Ram
 *** Then Click the **Import and Run** 
@@ -262,7 +262,7 @@ reboot
 ** In the top Right side click the **Import VM**
 *** In the Name feild we want to use **node1**
 *** On the Connections option we want to make sure that **System** is selected
-*** On the Disk image we want to use this path **/var/lib/libvirt/images/node1-rhel-9.4-x86_64-kvm.qcow2**
+*** On the Disk image we want to use this path **/var/lib/libvirt/images/infra1-rhel-9.5-x86_64-kvm.qcow2**
 *** On Operation system choose Red Hat Enterprise Linux 9
 *** On Memory go with the default 2 GB of Ram
 *** Then Click the **Import and Run** 
@@ -284,7 +284,7 @@ In the console type
 ip addr
 ----
 
-Take note of the IP address, then open a terminal on your **bastion** machine.
+Take note of the IP address, then open a terminal on your **rhel** machine.
 
 
 You will also need to create a user to connect with over ssh since root is disabled by default in rhel 9.
@@ -308,7 +308,7 @@ LetMeIn1
 Next we need to set your hostname in the vm
 [source,ini,role=execute,subs=attributes+]
 ----
-hostnamectl set-hostname node1
+hostnamectl set-hostname infra1
 ----
 
 Then reboot your virtual machine.
@@ -326,7 +326,7 @@ You should see a prompt with your current username and the hostname of the machi
 
 [source,textinfo]
 ----
-[ec2-user@bastion ~]$
+[ec2-user@rhel ~]$
 ----
 
 
@@ -365,7 +365,7 @@ Then on the screen will be a message that says something like.
 Your identification has been saved in /home/ec2-user/.ssh/id_rsa
 Your public key has been saved in /home/ec2-user/.ssh/id_rsa.pub
 The key fingerprint is:
-SHA256:5Z8GpqUSojEcZWvtspDVefI5YIVajUr3+HTVi3HcE+4 ec2-user@bastion.fnlng.internal
+SHA256:5Z8GpqUSojEcZWvtspDVefI5YIVajUr3+HTVi3HcE+4 ec2-user@rhel.fnlng.internal
 The key's randomart image is:
 +---[RSA 3072]----+
 |    o  +.    o o.|
@@ -404,7 +404,7 @@ You should now see 2 new files called `id_rsa` and `id_rsa.pub`
 authorized_keys  config   id_rsa  id_rsa.pub
 ----
 
-=== 1.8 Push your public ssh Key to node1
+=== 1.8 Push your public ssh Key to infra1
 
 Now we want to send our public key to the  ec2-user on the node1 machine.
 
@@ -424,7 +424,7 @@ You will want to test that bastion ssh key works to connect to your node1 machin
 
 [source,ini,role=execute,subs=attributes+]
 ----
-ssh ec2-user@node1IPADDRESS
+ssh ec2-user@infra1IPADDRESS
 ----
 
 When you log in you should  now see
@@ -434,7 +434,7 @@ You should see a prompt with your current username and the hostname of the machi
 
 [source,textinfo]
 ----
-[ec2-use@node1 ~]$
+[ec2-use@infra1 ~]$
 ----
 
 You can now exit the node machine by typing,
