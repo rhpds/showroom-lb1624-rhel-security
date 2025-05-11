@@ -1,5 +1,8 @@
 == How to set up a Local Linux Machine with KVM to do this lab
 
+If you are in a live classroom or in a phisical workshop, follow these instructions.
+
+If you want to do this at home or on your own machine, you can follow the instructions below.
 
 Lab Length
 Medium/Average (~15-25 mins)
