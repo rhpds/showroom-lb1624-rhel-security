@@ -22,8 +22,10 @@ You are working on a black box.
 
 You are given access and credentials to a hypervisor machine. 
 The goal is to create 2 machines that we will use.
-* Red Hat Enterprise Linux 9.5
-* Red Hat Enterprise Linux 9.5 (Log Server)
+
+. Red Hat Enterprise Linux 9.5 : Hostname 'rhel' acting as a Client
+. Red Hat Enterprise Linux 9.5 : Hostname 'infra1' acting as a Log Server
+
 You can add more nodes or other version of RHEL to have a testbed of RHEL 7-9.
 
 == 1.2 Expectations of your Host OS
