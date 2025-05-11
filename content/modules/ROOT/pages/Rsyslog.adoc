@@ -7,7 +7,9 @@ https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/securit
 
 If you want to set up your own rsyslog server, in this lab here are the basic steps.
 
-First we need to ssh to our Infrastructer box.
+== Step 1 Connect to Infrastructure box
+
+We need to ssh to our Infrastructure box.
 
 [source,ini,role=execute,subs=attributes+]
 ----
@@ -102,6 +104,8 @@ sudo ip addr | grep "eth0"
 
 Take note of this, becuase your IP address may be different from the example
 
+== Step 2 Configure our client machines
+
 **Lets configure our client machines now**
 
 [source,ini,role=execute,subs=attributes+]
@@ -145,7 +149,8 @@ sudo systemctl restart rsyslog
 logger test
 ----
 
-**Back to the infra1 server**
+
+== Step 3 Back to the infra1 server
 
 Now we log back into the infra1 node and check to see if we have logs from rhel
 
