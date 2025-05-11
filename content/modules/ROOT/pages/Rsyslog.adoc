@@ -5,26 +5,37 @@ Medium/Average (~10-20 mins)
 
 https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/security_hardening/assembly_configuring-a-remote-logging-solution_security-hardening#assembly_configuring-a-remote-logging-solution_security-hardening
 
+If you want to set up your own rsyslog server, in this lab here are the basic steps.
+
+First we need to ssh to our Infrastructer box.
 
 [source,ini,role=execute,subs=attributes+]
 ----
 ssh infra1
 ----
 
+Then we are going to install a few requred packages
+
 [source,ini,role=execute,subs=attributes+]
 ----
 sudo yum install policycoreutils-python-utils 
 ----
+
+Now we are going to set the SELinux rules.
 
 [source,ini,role=execute,subs=attributes+]
 ----
 sudo semanage port -a -t syslogd_port_t -p tcp 514
 ----
 
+Let's open the remotelog.conf
+
 [source,ini,role=execute,subs=attributes+]
 ----
 sudo vi /etc/rsyslog.d/remotelog.conf
 ----
+
+Paste this intto the file.
 
 [source,ini,role=execute,subs=attributes+]
 ----
@@ -59,22 +70,30 @@ action(type="omfile" DynaFile="TmplMsg")
 input(type="imtcp" port="514" ruleset="remote1")
 ----
 
+Save and exit the file.
+
+Next let check if the config file is correct.
+
 [source,ini,role=execute,subs=attributes+]
 ----
 sudo rsyslogd -N 1
 ----
+
+Now lets restart the rsyslog service
 
 [source,ini,role=execute,subs=attributes+]
 ----
 sudo systemctl restart rsyslog
 ----
 
+Lets set rsyslog service to be enabled on reboot.
+
 [source,ini,role=execute,subs=attributes+]
 ----
 sudo systemctl enable rsyslog
 ----
 
-lets find out what the ip address of our rsyslog server is and take note of it.
+One of the last steps is to find out what the ip address of our rsyslog server is and take note of it.
 
 [source,ini,role=execute,subs=attributes+]
 ----
