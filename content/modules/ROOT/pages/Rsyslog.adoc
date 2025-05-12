@@ -1,4 +1,4 @@
-== Ansible 101 and Logging Server
+== Basic Logging Server
 
 Lab Length
 Medium/Average (~10-20 mins)
