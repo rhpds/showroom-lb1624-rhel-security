@@ -32,4 +32,14 @@
 ** xref:AuditD.adoc[Step 10: Generating Reports]
 ** xref:AuditD.adoc[Step 11: Transforming Audit Logs]
 ** xref:AuditD.adoc[Resetting the Lab System (Optional)]
-** xref:AuditD.adoc[The Top 5 Issues That People Have With AuditD]
+
+* xref:Rsyslog.adoc[Basic Logging Server]
+** xref:Rsyslog.adoc[Step 1: Connect to Infrastructure box]
+** xref:Rsyslog.adoc[Step 2: Configure our client machines]
+** xref:Rsyslog.adoc[Step 3: Back to the infra1 server]
+
+* xref:Local_Linux_Machine_with_KVM.adoc[Local Linux Machine with KVM]
+** xref:Local_Linux_Machine_with_KVM.adoc[Step 1: Introduction]
+
+
+
