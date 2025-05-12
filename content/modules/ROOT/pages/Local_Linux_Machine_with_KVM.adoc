@@ -10,7 +10,7 @@ Medium/Average (~15-25 mins)
 Goal
 Become familiar with how to set up a local machine to work on this workshop.
 
-== 1.1: Introduction
+== Step 1: Introduction
 
 **If you want to do this at home or on your own machine follow these instructions.**
 
@@ -28,7 +28,7 @@ The goal is to create 2 machines that we will use.
 
 You can add more nodes or other version of RHEL to have a testbed of RHEL 7-9.
 
-== 1.2 Expectations of your Host OS
+== Step 2: Expectations of your Host OS
 
 We are going to assume you are running
 
@@ -45,15 +45,15 @@ And that you have an account with sudo permissions.
 
 If you are running another OS, the instructions may be different.
 
-== 1.3 Log into Red Hat 
+== Step 3: Log into Red Hat 
 
-=== 1.3.1 If you already have a Red Hat Account
+=== Step 3.1: If you already have a Red Hat Account
 
 If you can log onto https://developers.redhat.com/about[developers.redhat.com] with your previously created account.
  
 You can skip part 1.3.2 and go to Step 1.4
 
-=== 1.3.2 Create a Red Hat account with Free Developer Subscription
+=== Step 3.2: Create a Red Hat account with Free Developer Subscription
 
 If you don't have a Red Hat Account, you can create a Red Hat account online to activate the No-cost Red Hat Enterprise Linux Individual Developer Subscription.
 
@@ -63,7 +63,7 @@ You will need to follow the steps on the site, including to verify your email ad
 
 Then you will be able to log in access.redhat.com with your newly created account.
 
-== 1.4 RHEL KVM Downloads
+== Step 4:  RHEL KVM Downloads
 
 * In the top left corner, click the **Downloads**,
 * Then under Products find **Red Hat Enterprise Linux**,
@@ -74,7 +74,7 @@ Then you will be able to log in access.redhat.com with your newly created accoun
 While we wait for the download to finish.
 we can move onto the next step.
 
-== 1.5 Installing the Cockpit Project aka Web Console
+== Step 5: Installing the Cockpit Project aka Web Console
 
 Cockpit is a web-based graphical interface for servers, intended for everyone, especially those who are:
 
@@ -87,7 +87,7 @@ Cockpit is a web-based graphical interface for servers, intended for everyone, e
 * expert admins
 ** who mainly use other tools but want an overview on individual systems
 
-=== 1.5.1 Install Cockpit Project with Virtual Machine Management
+=== Step 5.1: Install Cockpit Project with Virtual Machine Management
 
 **Important note for this lab**
 
@@ -113,7 +113,7 @@ sudo systemctl enable libvirtd --now
 sudo systemctl enable --now cockpit.socket
 ----
 
-=== 1.5.2 KVM Image Prep of bastion and node1
+=== Step 5.2: KVM Image Prep of bastion and node1
 
 Once you have downloaded the kvm/qcow2 images,
 Move them to `/var/lib/libvirt/images`
@@ -167,7 +167,7 @@ sudo virt-customize -a /var/lib/libvirt/images/infra1-rhel-9.5-x86_64-kvm.qcow2 
 ----
 
 
-=== 1.5.3 Configure Cockpit with storage
+=== Step 5.3: Configure Cockpit with storage
 
 * Open a web browser like firefox or chrome
 * In the address bar go to **localhost:9090**
@@ -191,13 +191,13 @@ sudo virt-customize -a /var/lib/libvirt/images/infra1-rhel-9.5-x86_64-kvm.qcow2 
 **** And make sure the **Startup** is checked.
 **** Click the **Create** Button.
 
-=== 1.5.4 Configure Cockpit for Networked Bridge
+=== Step 5.4: Configure Cockpit for Networked Bridge
 
 * On the left hand side find and click **Networking**,
 ** On the right hand side, click the button "Add Bridge",
 ** Click Add Button
 
-=== 1.5.5 Configure Cockpit for server Virtual Machine
+=== Step 5.5: Configure Cockpit for server Virtual Machine
 
 * On the left hand side find and click **Virtual machines**,
 ** In the top Right side click the **Import VM**
@@ -258,7 +258,7 @@ Then reboot your virtual machine.
 ----
 reboot
 ----
-=== 1.5.6 Configure Cockpit for node1 Virtual Machine
+=== Step 5.6: Configure Cockpit for node1 Virtual Machine
 
 * On the left hand side find and click **Virtual machines**,
 ** In the top Right side click the **Import VM**
@@ -320,7 +320,7 @@ Then reboot your virtual machine.
 reboot
 ----
 
-=== 1.6 Create a SSH key pair
+== Step 6: Create a SSH key pair
 
 From your bastion host, open a terminal
 
@@ -385,7 +385,7 @@ The key's randomart image is:
 ----
 
 
-=== 1.7 Verifying Key Pair Creation
+===Step 7: Verifying Key Pair Creation
 
 Now lets make sure we can see the newly created ssh keypair.
 
@@ -406,7 +406,7 @@ You should now see 2 new files called `id_rsa` and `id_rsa.pub`
 authorized_keys  config   id_rsa  id_rsa.pub
 ----
 
-=== 1.8 Push your public ssh Key to infra1
+== Step 8: Push your public ssh Key to infra1
 
 Now we want to send our public key to the  ec2-user on the node1 machine.
 
@@ -419,7 +419,7 @@ ssh-copy-id ec2-user@node1IPADDRESS
 It should promopt you to enter the root password to the node1 machine.
 
 
-=== 1.9 Verifying ssh keys work
+== Step 9: Verifying ssh keys work
 
 
 You will want to test that bastion ssh key works to connect to your node1 machine.
@@ -450,7 +450,7 @@ Which should take you back to your bastion host.
 
 Now we are ready to step into the next section.
 
-=== 1.9.1 copy your ssh key to your local machine
+=== Step 9.1: copy your ssh key to your local machine
 
 [source,ini,role=execute,subs=attributes+]
 ----
