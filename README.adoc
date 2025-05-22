@@ -45,3 +45,4 @@ Users will leave with practical knowledge on how to install, configure, and mana
 
 === Presentation Slides:
 
+* https://github.com/rhpds/showroom-lb1624-rhel-security/blob/main/Enabling%20RHEL%20Security_%20SELinux%2C%20Fapolicyd%20and%20Auditd%20_%20Red%20Hat%20Summit%202025.pdf[Enabling RHEL Security_ SELinux, Fapolicyd and Auditd _ Red Hat Summit 2025.pdf]
